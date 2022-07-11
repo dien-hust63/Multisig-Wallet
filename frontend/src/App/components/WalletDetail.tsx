@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Menu, Segment, Message, Button, Icon } from "semantic-ui-react";
+import { useMultiSigWalletContext } from "../../contexts/MultiSigWallet";
 import { useWeb3Context } from "../../contexts/Web3";
 import "../../css/components/walletdetail.css";
 function WalletDetail() {
@@ -7,17 +8,19 @@ function WalletDetail() {
     state: { account, balance, netId },
     updateAccount,
   } = useWeb3Context();
-
+  const { state } = useMultiSigWalletContext();
   const [showRegionOwner, setShowRegionOwners] = useState(false);
   const [showRegionToken, setShowRegionToken] = useState(false);
   const [showRegionTrans, setShowRegionTrans] = useState(false);
 
-  function confirmTransaction() {}
+  function confirmTransaction() {
+    alert("test");
+  }
   return (
     <div className="wallet-detail">
       <div className="wallet-detail-header">
-        <h1>Ví Tạo 7.00 ETH</h1>
-        <div className="address">0x94034920342034903492034902343</div>
+        <h1>Ví Tạo {state.balance} ETH</h1>
+        <div className="address">{state.address}</div>
       </div>
       <div className="wallet-detail-body">
         <div className="wallet-detail-region">
@@ -49,10 +52,12 @@ function WalletDetail() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>John</td>
-                    <td>0xAB9482342342342342342342</td>
-                  </tr>
+                  {state.owners.map((owner, i) => (
+                    <tr>
+                      <td>Account {i}</td>
+                      <td>{owner}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

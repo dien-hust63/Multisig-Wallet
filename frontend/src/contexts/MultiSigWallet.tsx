@@ -11,6 +11,8 @@ import { useWeb3Context } from "./Web3";
 import { get as getMultiSigWallet, subscribe } from "../api/multi-sig-wallet";
 
 interface State {
+  name: string;
+  tokens: [];
   address: string;
   balance: string;
   owners: string[];
@@ -30,6 +32,8 @@ interface Transaction {
 }
 
 const INITIAL_STATE: State = {
+  name: "",
+  tokens: [],
   address: "",
   balance: "0",
   owners: [],
@@ -46,6 +50,8 @@ const UPDATE_TX = "UPDATE_TX";
 interface Set {
   type: "SET";
   data: {
+    name: string;
+    tokens: [];
     address: string;
     balance: string;
     owners: string[];
@@ -171,6 +177,8 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
 }
 
 interface SetInputs {
+  name: string;
+  tokens: [];
   address: string;
   balance: string;
   owners: string[];
@@ -265,13 +273,8 @@ export function Updater() {
   const {
     state: { web3, account },
   } = useWeb3Context();
-  const {
-    state,
-    set,
-    updateBalance,
-    addTx,
-    updateTx,
-  } = useMultiSigWalletContext();
+  const { state, set, updateBalance, addTx, updateTx } =
+    useMultiSigWalletContext();
 
   useEffect(() => {
     async function get(web3: Web3, account: string) {
@@ -291,6 +294,7 @@ export function Updater() {
   useEffect(() => {
     if (web3 && state.address) {
       return subscribe(web3, state.address, (error, log) => {
+        debugger;
         if (error) {
           console.error(error);
         } else if (log) {

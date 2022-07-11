@@ -1,11 +1,12 @@
 import Web3 from "web3";
 import BN from "bn.js";
 import TruffleContract from "@truffle/contract";
-import multiSigWalletTruffle from "../build/contracts/MultiSigWallet.json";
-
+import multiSigWalletTruffle from "../build/contracts/Wallet.json";
+import tokenTruffle from "../build/contracts/W2TCoinERC20.json";
+import "./token";
+import { getTokenInfo } from "./token";
 // @ts-ignore
 const MultiSigWallet = TruffleContract(multiSigWalletTruffle);
-
 interface Transaction {
   txIndex: number;
   to: string;
@@ -15,8 +16,14 @@ interface Transaction {
   numConfirmations: number;
   isConfirmedByCurrentAccount: boolean;
 }
-
+interface TokenInformation{
+  name: string;
+  symbol: string;
+  decimals: number;
+}
 interface GetResponse {
+  name: string;
+  tokens: [];
   address: string;
   balance: string;
   owners: string[];
@@ -27,11 +34,14 @@ interface GetResponse {
 
 export async function get(web3: Web3, account: string): Promise<GetResponse> {
   MultiSigWallet.setProvider(web3.currentProvider);
-
-  const multiSig = await MultiSigWallet.deployed();
-
+  
+  // const multiSig = await MultiSigWallet.deployed();
+  const multiSig = await MultiSigWallet.at("0x7d0200793b3c0dfaf3fe0dc8fe7ba2c7f0c10528");
+  debugger
   const balance = await web3.eth.getBalance(multiSig.address);
   const owners = await multiSig.getOwners();
+  const tokens = await multiSig.getTokens();
+  const tokenInfo = await getTokenInfo(web3, tokens[0]);
   const numConfirmationsRequired = await multiSig.numConfirmationsRequired();
   const transactionCount = await multiSig.getTransactionCount();
 
@@ -59,6 +69,8 @@ export async function get(web3: Web3, account: string): Promise<GetResponse> {
   }
 
   return {
+    name: multiSig.name,
+    tokens: multiSig.tokens,
     address: multiSig.address,
     balance,
     owners,
