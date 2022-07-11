@@ -2,7 +2,11 @@ import React from "react";
 import { Button } from "semantic-ui-react";
 import { useWeb3Context } from "../contexts/Web3";
 import useAsync from "../components/useAsync";
-import * as multiSig from "../api/multi-sig-wallet";
+import {
+  executeTransaction,
+  confirmTransaction,
+  revokeConfirmation,
+} from "../api/wallet";
 
 interface Props {
   numConfirmationsRequired: number;
@@ -28,16 +32,16 @@ const TransactionActions: React.FC<Props> = ({
     if (!web3) {
       throw new Error("No web3");
     }
-
-    await multiSig.confirmTx(web3, account, { txIndex });
+    await confirmTransaction(web3, account, { txIndex });
+    alert("fail");
   });
 
-  const revokeConfirmation = useAsync(async () => {
+  const revokeConfirmationTx = useAsync(async () => {
     if (!web3) {
       throw new Error("No web3");
     }
 
-    await multiSig.revokeConfirmation(web3, account, { txIndex });
+    await revokeConfirmation(web3, account, { txIndex });
   });
 
   const executeTx = useAsync(async () => {
@@ -45,7 +49,7 @@ const TransactionActions: React.FC<Props> = ({
       throw new Error("No web3");
     }
 
-    await multiSig.executeTx(web3, account, { txIndex });
+    await executeTransaction(web3, account, { txIndex });
   });
 
   if (tx.executed) {
@@ -55,9 +59,9 @@ const TransactionActions: React.FC<Props> = ({
     <>
       {tx.isConfirmedByCurrentAccount ? (
         <Button
-          onClick={(_e) => revokeConfirmation.call(null)}
-          disabled={revokeConfirmation.pending}
-          loading={revokeConfirmation.pending}
+          onClick={(_e) => revokeConfirmationTx.call(null)}
+          disabled={revokeConfirmationTx.pending}
+          loading={revokeConfirmationTx.pending}
         >
           Revoke Confirmation
         </Button>

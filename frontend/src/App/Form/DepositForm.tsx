@@ -3,7 +3,7 @@ import Web3 from "web3";
 import BN from "bn.js";
 import { Button, Form } from "semantic-ui-react";
 import { useWeb3Context } from "../../contexts/Web3";
-import { deposit } from "../../api/multi-sig-wallet";
+import { deposit } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
 import "../../css/form/depositform.css";
 
