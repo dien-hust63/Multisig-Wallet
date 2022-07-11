@@ -78,9 +78,9 @@ function App() {
                       onClick={openWalletDetail}
                       className="change-detail-link"
                     >
-                      John
+                      Ví vừa tạo đây
                     </td>
-                    <td>0x173f37BdDb0c9b021d1236c72046A046f756438E</td>
+                    <td>0x7d0200793b3c0dfaf3fe0dc8fe7ba2c7f0c10528</td>
                     <td>7.00 ETH</td>
                     <td>
                       <div className="required-confirm">
