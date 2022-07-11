@@ -58,7 +58,7 @@ const Header: React.FC<Props> = ({ backMainDisplay }) => {
           {account ? (
             <>
               <div className="info-item">
-                Balance: <h4>{balance}</h4>
+                Balance: <h4>{balance} ETH</h4>
               </div>
               <Network netId={netId} />
             </>

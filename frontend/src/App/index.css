@@ -52,3 +52,17 @@
   justify-content: space-between;
   color: white;
 }
+
+.change-detail-link:hover{
+  text-decoration:underline;
+  color: aqua !important;
+}
+
+.required-confirm{
+  display: flex;
+  align-items: center;
+}
+
+.number-required{
+  margin-right: 10px;
+}

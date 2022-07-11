@@ -9,6 +9,8 @@ import Header from "./components/Header";
 import Network from "./Network";
 import CreateWalletForm from "./Form/CreateWallet";
 import WalletDetail from "./components/WalletDetail";
+import DepositForm from "./Form/DepositForm";
+import WithdrawForm from "./Form/WithDrawForm";
 
 function App() {
   const {
@@ -18,6 +20,8 @@ function App() {
 
   const [walletOpen, setWalletOpen] = useState(false);
   const [showMainDisplay, setShowMainDisplay] = useState(true);
+  const [depositFormOpen, setDispositFormOpen] = useState(false);
+  const [withdrawFormOpen, setWithDrawFormOpen] = useState(false);
   const { pending, error, call } = useAsync(unlockAccount);
 
   async function onClickConnect() {
@@ -37,6 +41,10 @@ function App() {
 
   function openWalletDetail() {
     setShowMainDisplay(false);
+  }
+
+  function depositWallet() {
+    setDispositFormOpen(true);
   }
 
   return (
@@ -61,14 +69,43 @@ function App() {
                     <th>Address</th>
                     <th>Balance</th>
                     <th>Required Confirmations</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td onClick={openWalletDetail}>John</td>
-                    <td>Approved</td>
-                    <td>None</td>
-                    <td>None</td>
+                    <td
+                      onClick={openWalletDetail}
+                      className="change-detail-link"
+                    >
+                      John
+                    </td>
+                    <td>0x173f37BdDb0c9b021d1236c72046A046f756438E</td>
+                    <td>7.00 ETH</td>
+                    <td>
+                      <div className="required-confirm">
+                        <div className="number-required">1</div>
+                        <Button
+                          color="grey"
+                          onClick={depositWallet}
+                          size="tiny"
+                        >
+                          Edit
+                        </Button>
+                      </div>
+                    </td>
+                    <td>
+                      <Button color="blue" onClick={depositWallet} size="tiny">
+                        Deposit
+                      </Button>
+                      <Button
+                        color="grey"
+                        onClick={() => setWithDrawFormOpen(true)}
+                        size="tiny"
+                      >
+                        Withdraw
+                      </Button>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -80,6 +117,12 @@ function App() {
       </div>
       {walletOpen ? (
         <CreateWalletForm closeCreateWalletForm={() => setWalletOpen(false)} />
+      ) : null}
+      {depositFormOpen ? (
+        <DepositForm closeDepositForm={() => setDispositFormOpen(false)} />
+      ) : null}
+      {withdrawFormOpen ? (
+        <WithdrawForm closeWithDrawForm={() => setWithDrawFormOpen(false)} />
       ) : null}
       {/* <Footer /> */}
     </div>
