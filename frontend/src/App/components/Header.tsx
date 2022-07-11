@@ -4,6 +4,7 @@ import { unlockAccount } from "../../api/web3";
 import { useWeb3Context } from "../../contexts/Web3";
 import useAsync from "../../components/useAsync";
 import "../../css/components/header.css";
+import Network from "../Network";
 interface Props {
   backMainDisplay: () => void;
 }
@@ -59,15 +60,17 @@ const Header: React.FC<Props> = ({ backMainDisplay }) => {
               <div className="info-item">
                 Balance: <h4>{balance}</h4>
               </div>
+              <Network netId={netId} />
             </>
           ) : (
-            <div></div>
+            <>
+              <Menu.Item
+                name="Unlock Metamask"
+                active={activeItem === "logout"}
+                onClick={() => onClickConnect()}
+              />
+            </>
           )}
-          <Menu.Item
-            name="Unlock Metamask"
-            active={activeItem === "logout"}
-            onClick={() => onClickConnect()}
-          />
         </Menu.Menu>
       </Menu>
 
