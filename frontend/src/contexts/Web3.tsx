@@ -10,14 +10,14 @@ import { subscribeToAccount, subscribeToNetId } from "../api/web3";
 
 interface State {
   account: string;
-  balance: number;
+  balance: string;
   web3: Web3 | null;
   netId: number;
 }
 
 const INITIAL_STATE: State = {
   account: "",
-  balance: 0,
+  balance: "0",
   web3: null,
   netId: 0,
 };
@@ -28,7 +28,7 @@ const UPDATE_NET_ID = "UPDATE_NET_ID";
 interface UpdateAccount {
   type: "UPDATE_ACCOUNT";
   account: string;
-  balance: number;
+  balance: string;
   web3?: Web3;
 }
 
@@ -49,7 +49,7 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
         ...state,
         web3,
         account,
-        balance
+        balance,
       };
     }
     case UPDATE_NET_ID: {
@@ -67,7 +67,11 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
 
 const Web3Context = createContext({
   state: INITIAL_STATE,
-  updateAccount: (_data: { account: string; balance: number; web3?: Web3}) => {},
+  updateAccount: (_data: {
+    account: string;
+    balance: string;
+    web3?: Web3;
+  }) => {},
   updateNetId: (_data: { netId: number }) => {},
 });
 
@@ -80,7 +84,11 @@ interface ProviderProps {}
 export const Provider: React.FC<ProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
-  function updateAccount(data: { account: string; balance: number, web3?: Web3 }) {
+  function updateAccount(data: {
+    account: string;
+    balance: string;
+    web3?: Web3;
+  }) {
     dispatch({
       type: UPDATE_ACCOUNT,
       ...data,

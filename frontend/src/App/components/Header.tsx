@@ -39,27 +39,30 @@ const Header: React.FC<Props> = ({ backMainDisplay }) => {
           active={activeItem === "wallets"}
           onClick={() => handleItemClick("wallets")}
         />
-        <Menu.Item
+        {/* <Menu.Item
           name="transactions"
           active={activeItem === "transactions"}
           onClick={() => handleItemClick("transactions")}
-        />
-        <Menu.Menu position="right">
+        /> */}
+        <Menu.Menu position="right" className="infor-account">
           {account ? (
             <>
-              <div>Account: {account}</div>
+              <div className="info-item">
+                Account: <h4>{account}</h4>
+              </div>
             </>
           ) : (
             <div></div>
           )}
-          {balance ? (
+          {account ? (
             <>
-              <div>Balance: {balance}</div>
+              <div className="info-item">
+                Balance: <h4>{balance}</h4>
+              </div>
             </>
           ) : (
             <div></div>
           )}
-          <Menu.Item name="Balance" />
           <Menu.Item
             name="Unlock Metamask"
             active={activeItem === "logout"}
