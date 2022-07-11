@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Menu, Segment, Message, Button } from "semantic-ui-react";
-import { unlockAccount } from "../api/web3";
-import { useWeb3Context } from "../contexts/Web3";
-import useAsync from "../components/useAsync";
-import "./header.css";
-
-function Header() {
+import { unlockAccount } from "../../api/web3";
+import { useWeb3Context } from "../../contexts/Web3";
+import useAsync from "../../components/useAsync";
+import "../../css/components/header.css";
+interface Props {
+  backMainDisplay: () => void;
+}
+const Header: React.FC<Props> = ({ backMainDisplay }) => {
   const {
     state: { account, balance, netId },
     updateAccount,
@@ -23,8 +25,10 @@ function Header() {
     }
   }
   const [activeItem, setActiveItem] = useState("wallets");
+
   function handleItemClick(name: any) {
     setActiveItem(name);
+    backMainDisplay();
   }
   return (
     <div className="header">
@@ -69,6 +73,6 @@ function Header() {
           </Segment> */}
     </div>
   );
-}
+};
 
 export default Header;

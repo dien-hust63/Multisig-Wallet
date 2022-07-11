@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import Web3 from "web3";
 import BN from "bn.js";
-import { Button, Form } from "semantic-ui-react";
+import { Button, ButtonProps, Form } from "semantic-ui-react";
 import { useWeb3Context } from "../../contexts/Web3";
 import useAsync from "../../components/useAsync";
 import { deposit } from "../../api/multi-sig-wallet";
 import "../../css/form/createwallet.css";
 interface Props {
-  closeCreateWalletForm: any;
+  closeCreateWalletForm: () => void;
 }
 
 interface CreatewalletParams {
@@ -16,13 +16,30 @@ interface CreatewalletParams {
   value: BN;
 }
 
-const CreateWalletForm: React.FC<Props> = () => {
+interface Owners {
+  name: string;
+  address: string;
+}
+interface Wallet {
+  name: string;
+  requiredConfirm: BN;
+  accounts: Owners[];
+}
+
+const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
   const {
     state: { web3, account },
   } = useWeb3Context();
 
   const [name, setName] = useState("");
   const [requiredConfirmarion, setRequiredConfirmation] = useState(0);
+  const [owners, setOwners] = useState<Owners[]>([
+    {
+      name: "My Account",
+      address: account,
+    },
+  ]);
+  const [wallet, setWallet] = useState<Wallet>();
   const { pending, call } = useAsync<CreatewalletParams, void>(
     ({ web3, account, value }) => deposit(web3, account, { value })
   );
@@ -34,7 +51,39 @@ const CreateWalletForm: React.FC<Props> = () => {
   function changeRequiredConfirmation(e: React.ChangeEvent<HTMLInputElement>) {
     setRequiredConfirmation(Number(e.target.value));
   }
+  function addOwner() {
+    setOwners([
+      ...owners,
+      {
+        name: "",
+        address: "",
+      },
+    ]);
+  }
 
+  function removeOwner(index: number) {
+    let listOwners = [...owners];
+    listOwners.splice(index, 1);
+    setOwners(listOwners);
+  }
+
+  function changeOwnerName(
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) {
+    let listOwners = [...owners];
+    listOwners[index].name = e.target.value;
+    setOwners(listOwners);
+  }
+
+  function changeOwnerAddress(
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) {
+    let listOwners = [...owners];
+    listOwners[index].address = e.target.value;
+    setOwners(listOwners);
+  }
   async function createWallet() {
     alert("Test");
     // if (pending) {
@@ -76,7 +125,7 @@ const CreateWalletForm: React.FC<Props> = () => {
               <label>Name</label>
               <Form.Input
                 placeholder=""
-                type="number"
+                type="text"
                 min={0}
                 value={name}
                 onChange={changeName}
@@ -90,6 +139,55 @@ const CreateWalletForm: React.FC<Props> = () => {
                 onChange={changeRequiredConfirmation}
               />
             </Form.Field>
+            <div className="wallet-header">
+              <h3>Owners</h3>
+              <div>
+                <Button inverted color="blue" onClick={addOwner}>
+                  Add
+                </Button>
+              </div>
+            </div>
+            <table className="ui selectable table wallet-table">
+              <thead>
+                <tr>
+                  <th className="three wide">Name</th>
+                  <th className="five wide">Address</th>
+                  <th className="two wide">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {owners.map((owner, index) => {
+                  return (
+                    <tr>
+                      <td>
+                        <input
+                          type="text"
+                          value={owner.name}
+                          onChange={(e) => changeOwnerName(e, index)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          value={owner.address}
+                          onChange={(e) => changeOwnerAddress(e, index)}
+                        />
+                      </td>
+                      <td>
+                        <Button
+                          color="red"
+                          disabled={pending}
+                          loading={pending}
+                          onClick={() => removeOwner(index)}
+                        >
+                          Remove
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </Form>
         </div>
 
@@ -102,7 +200,12 @@ const CreateWalletForm: React.FC<Props> = () => {
           >
             Deposit
           </Button>
-          <Button color="red" disabled={pending} loading={pending}>
+          <Button
+            color="red"
+            disabled={pending}
+            loading={pending}
+            onClick={closeCreateWalletForm}
+          >
             Cancel
           </Button>
         </div>

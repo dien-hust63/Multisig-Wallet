@@ -5,9 +5,10 @@ import "./index.css";
 import useAsync from "../components/useAsync";
 import { useWeb3Context } from "../contexts/Web3";
 import MultiSigWallet from "./MultiSigWallet";
-import Header from "./Header";
+import Header from "./components/Header";
 import Network from "./Network";
 import CreateWalletForm from "./Form/CreateWallet";
+import WalletDetail from "./components/WalletDetail";
 
 function App() {
   const {
@@ -16,6 +17,7 @@ function App() {
   } = useWeb3Context();
 
   const [walletOpen, setWalletOpen] = useState(false);
+  const [showMainDisplay, setShowMainDisplay] = useState(true);
   const { pending, error, call } = useAsync(unlockAccount);
 
   async function onClickConnect() {
@@ -33,57 +35,51 @@ function App() {
     setWalletOpen(true);
   }
 
-  function closeCreateWalletForm() {
-    setWalletOpen(false);
+  function openWalletDetail() {
+    setShowMainDisplay(false);
   }
 
   return (
     <div className="App">
-      <Header />
+      <Header backMainDisplay={() => setShowMainDisplay(true)} />
       <div className="App-main">
         <div className="App-body">
-          <div className="wallet-header">
-            <h2>Wallets</h2>
-            <div>
-              <Button inverted color="blue" onClick={openCreateWalletForm}>
-                Add
-              </Button>
+          {showMainDisplay ? (
+            <div className="main-display">
+              <div className="wallet-header">
+                <h2>Wallets</h2>
+                <div>
+                  <Button inverted color="blue" onClick={openCreateWalletForm}>
+                    Add
+                  </Button>
+                </div>
+              </div>
+              <table className="ui selectable table wallet-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Balance</th>
+                    <th>Required Confirmations</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td onClick={openWalletDetail}>John</td>
+                    <td>Approved</td>
+                    <td>None</td>
+                    <td>None</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          </div>
-          <table className="ui selectable table wallet-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Balance</th>
-                <th>Required Confirmations</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>John</td>
-                <td>Approved</td>
-                <td>None</td>
-                <td>None</td>
-              </tr>
-              <tr>
-                <td>Jamie</td>
-                <td>Approved</td>
-                <td>Requires call</td>
-                <td>None</td>
-              </tr>
-              <tr>
-                <td>Jill</td>
-                <td>Denied</td>
-                <td>None</td>
-                <td>None</td>
-              </tr>
-            </tbody>
-          </table>
+          ) : (
+            <WalletDetail />
+          )}
         </div>
       </div>
       {walletOpen ? (
-        <CreateWalletForm closeCreateWalletForm={closeCreateWalletForm} />
+        <CreateWalletForm closeCreateWalletForm={() => setWalletOpen(false)} />
       ) : null}
       {/* <Footer /> */}
     </div>

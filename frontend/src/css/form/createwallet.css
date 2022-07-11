@@ -22,4 +22,28 @@
     display: flex;
     flex-direction: column;
     color: rgba(255, 255, 255, 0.8);
+    padding: 2% 2%;
+}
+
+.form-body{
+    flex: 1;
+    padding: 10px 8px;
+    box-sizing: border-box;
+    /*height: calc(100% - 56px); */
+    overflow: auto;
+}
+
+.create-wallet-form .form-body .form label{
+    color: #fff !important;
+}
+
+.form-footer{
+    display: flex;
+    justify-content: end;
+    margin-top: 10px
+}
+.form-footer button{
+    margin-left: 4px !important;
+    padding: 0px 8px;
+    box-sizing: border-box;
 }

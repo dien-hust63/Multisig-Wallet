@@ -10,7 +10,7 @@
 .wallet-icon{
     width: 60px;
     height: 32px;
-    background-image: url("../static/wallet.png");
+    background-image: url("../../static/wallet.png");
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;
