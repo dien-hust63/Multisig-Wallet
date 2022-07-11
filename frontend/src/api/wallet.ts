@@ -86,13 +86,40 @@ export async function deposit(
   await multiSig.sendTransaction({ from: account, value: params.value });
 }
 
+export async function createWallet(
+  web3: Web3,
+  account: string,
+  params: {
+    name: string;
+    numConfirmationsRequired: number;
+    owners: string[];
+  }
+) {
+  const { name, numConfirmationsRequired, owners } = params;
+  Wallet.setProvider(web3.currentProvider);
+  const multiSig = await Wallet.new([name, numConfirmationsRequired, owners]);
+  return multiSig;
+}
+
+export async function getWalletAtAddress(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+  }
+) {
+  Wallet.setProvider(web3.currentProvider);
+  const multiSig = await Wallet.at(params.address);
+  return multiSig;
+}
+
 export async function submitTransaction(
   web3: Web3,
   account: string,
   params: {
     destination: string;
     // NOTE: error when passing BN type, so pass string
-    value: string;
+    value: number;
     data: string;
     token: string;
   }

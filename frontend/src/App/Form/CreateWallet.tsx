@@ -6,11 +6,12 @@ import { useWeb3Context } from "../../contexts/Web3";
 import useAsync from "../../components/useAsync";
 import { deposit } from "../../api/multi-sig-wallet";
 import "../../css/form/createwallet.css";
+import { createWallet } from "../../api/wallet";
 interface Props {
   closeCreateWalletForm: () => void;
 }
 
-interface CreatewalletParams {
+interface depositParams {
   web3: Web3;
   account: string;
   value: BN;
@@ -24,6 +25,12 @@ interface Wallet {
   name: string;
   requiredConfirm: BN;
   accounts: Owners[];
+}
+
+interface CreateWalletParams {
+  name: string;
+  numConfirmationsRequired: number;
+  owners: string[];
 }
 
 const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
@@ -40,9 +47,20 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
     },
   ]);
   const [wallet, setWallet] = useState<Wallet>();
-  const { pending, call } = useAsync<CreatewalletParams, void>(
+  const { pending, call } = useAsync<depositParams, void>(
     ({ web3, account, value }) => deposit(web3, account, { value })
   );
+
+  const {
+    pending: walletP,
+    error: walletErr,
+    call: walletCall,
+  } = useAsync<CreateWalletParams, any>(async (params) => {
+    if (!web3) {
+      throw new Error("No web3");
+    }
+    await createWallet(web3, account, params);
+  });
 
   function changeName(e: React.ChangeEvent<HTMLInputElement>) {
     setName(e.target.value);
@@ -84,33 +102,15 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
     listOwners[index].address = e.target.value;
     setOwners(listOwners);
   }
-  async function createWallet() {
-    alert("Test");
-    // if (pending) {
-    //   return;
-    // }
+  async function createWalletHandler() {
+    const ownerAddrs = owners.map((i) => i.address);
+    const test = await walletCall({
+      name,
+      numConfirmationsRequired: requiredConfirmarion,
+      owners: ownerAddrs,
+    });
 
-    // if (!web3) {
-    //   alert("No web3");
-    //   return;
-    // }
-
-    // const value = Web3.utils.toBN(input);
-    // const zero = Web3.utils.toBN(0);
-
-    // if (value.gt(zero)) {
-    //   const { error } = await call({
-    //     web3,
-    //     account,
-    //     value,
-    //   });
-
-    //   if (error) {
-    //     alert(`Error: ${error.message}`);
-    //   } else {
-    //     setInput("");
-    //   }
-    // }
+    alert("Success");
   }
 
   return (
@@ -196,7 +196,7 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
             color="blue"
             disabled={pending}
             loading={pending}
-            onClick={createWallet}
+            onClick={createWalletHandler}
           >
             Deposit
           </Button>
