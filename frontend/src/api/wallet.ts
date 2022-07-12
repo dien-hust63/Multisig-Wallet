@@ -145,20 +145,21 @@ export async function submitTransaction(
 }
 
 export async function confirmTransaction(
-  web3: Web3,
+  web3: Web3 | null,
   account: string,
   params: {
     txIndex: number;
   }
 ) {
   const { txIndex } = params;
+  if (web3) {
+    Wallet.setProvider(web3.currentProvider);
+    const multiSig = await Wallet.deployed();
 
-  Wallet.setProvider(web3.currentProvider);
-  const multiSig = await Wallet.deployed();
-
-  await multiSig.confirmTransaction(txIndex, {
-    from: account,
-  });
+    await multiSig.confirmTransaction(txIndex, {
+      from: account,
+    });
+  }
 }
 
 export async function revokeConfirmation(

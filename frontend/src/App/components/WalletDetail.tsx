@@ -3,18 +3,36 @@ import { Menu, Segment, Message, Button, Icon } from "semantic-ui-react";
 import { useMultiSigWalletContext } from "../../contexts/MultiSigWallet";
 import { useWeb3Context } from "../../contexts/Web3";
 import "../../css/components/walletdetail.css";
+import useAsync from "../../components/useAsync";
+import { confirmTransaction } from "../../api/wallet";
 function WalletDetail() {
   const {
-    state: { account, balance, netId },
+    state: { web3, account, balance, netId },
     updateAccount,
   } = useWeb3Context();
   const { state } = useMultiSigWalletContext();
   const [showRegionOwner, setShowRegionOwners] = useState(false);
   const [showRegionToken, setShowRegionToken] = useState(false);
   const [showRegionTrans, setShowRegionTrans] = useState(false);
+  interface ConfirmTransParams {
+    txIndex: number;
+  }
 
-  function confirmTransaction() {
-    alert("test");
+  // const {
+  //   pending: walletP,
+  //   error: walletErr,
+  //   call: confirmTrans,
+  // } = useAsync<ConfirmTransParams, any>(async (params) => {
+  //   if (!web3) {
+  //     throw new Error("NconfirmTransactiono web3");
+  //   }
+  //   await confirmTransaction(web3, account, params);
+  // });
+
+  async function confirmTransaction1(txIndex: number) {
+    const test = await confirmTransaction(web3, account, {
+      txIndex: txIndex,
+    });
   }
   return (
     <div className="wallet-detail">
@@ -149,7 +167,9 @@ function WalletDetail() {
                           <div>
                             <Button
                               color="blue"
-                              onClick={confirmTransaction}
+                              onClick={() =>
+                                confirmTransaction1(transaction.txIndex)
+                              }
                               size="tiny"
                             >
                               Confirm
