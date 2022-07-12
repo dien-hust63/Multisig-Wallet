@@ -59,6 +59,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm }) => {
   }
 
   async function depositWallet() {
+    debugger;
     if (pending) {
       return;
     }
@@ -67,7 +68,6 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm }) => {
       alert("No web3");
       return;
     }
-
     const value = Web3.utils.toBN(depositValue);
     const zero = Web3.utils.toBN(0);
 
@@ -95,7 +95,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm }) => {
         <div className="form-body">
           <Form>
             <Form.Field>
-              <label>Amount(ETH)</label>
+              <label>Amount(Wei)</label>
               <Form.Input
                 placeholder=""
                 type="number"

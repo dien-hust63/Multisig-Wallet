@@ -19,7 +19,7 @@ function WalletDetail() {
   return (
     <div className="wallet-detail">
       <div className="wallet-detail-header">
-        <h1>Ví Tạo {state.balance} ETH</h1>
+        <h1>Hust Wallet {state.balance} ETH</h1>
         <div className="address">{state.address}</div>
       </div>
       <div className="wallet-detail-body">
@@ -137,30 +137,29 @@ function WalletDetail() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>0x1ED45D067Dd06dC0D429DD6356f33F41cf4567b8</td>
-                    <td>0.00 ETH</td>
-                    <td>
-                      Transfer 10 W2T to
-                      0x57aCDD7B4E44538FACc549e99C9a842D58B8b15F
-                    </td>
-                    <td>
-                      <div className="confirm-cell">
-                        <div>List Owners</div>
-                        <div>
-                          <Button
-                            color="blue"
-                            onClick={confirmTransaction}
-                            size="tiny"
-                          >
-                            Confirm
-                          </Button>
+                  {state.transactions.map((transaction, i) => (
+                    <tr>
+                      <td>{i + 1}</td>
+                      <td>{transaction.to}</td>
+                      <td>{transaction.value} ETH</td>
+                      <td>{transaction.data}</td>
+                      <td>
+                        <div className="confirm-cell">
+                          <div>{transaction.numConfirmations}</div>
+                          <div>
+                            <Button
+                              color="blue"
+                              onClick={confirmTransaction}
+                              size="tiny"
+                            >
+                              Confirm
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>Yes</td>
-                  </tr>
+                      </td>
+                      <td>{transaction.executed}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

@@ -11,13 +11,14 @@ import CreateWalletForm from "./Form/CreateWallet";
 import WalletDetail from "./components/WalletDetail";
 import DepositForm from "./Form/DepositForm";
 import WithdrawForm from "./Form/WithDrawForm";
+import { useMultiSigWalletContext } from "../contexts/MultiSigWallet";
 
 function App() {
   const {
     state: { account, netId },
     updateAccount,
   } = useWeb3Context();
-
+  const { state } = useMultiSigWalletContext();
   const [walletOpen, setWalletOpen] = useState(false);
   const [showMainDisplay, setShowMainDisplay] = useState(true);
   const [depositFormOpen, setDispositFormOpen] = useState(false);
@@ -78,13 +79,15 @@ function App() {
                       onClick={openWalletDetail}
                       className="change-detail-link"
                     >
-                      Ví vừa tạo đây
+                      Hust Wallet
                     </td>
-                    <td>0x7d0200793b3c0dfaf3fe0dc8fe7ba2c7f0c10528</td>
-                    <td>7.00 ETH</td>
+                    <td>0xa3A70BCaDb48E17b38259e27E89564d74F05dBab</td>
+                    <td> {state.balance} ETH</td>
                     <td>
                       <div className="required-confirm">
-                        <div className="number-required">1</div>
+                        <div className="number-required">
+                          {state.numConfirmationsRequired}
+                        </div>
                         <Button
                           color="grey"
                           onClick={depositWallet}
