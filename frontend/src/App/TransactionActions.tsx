@@ -33,7 +33,6 @@ const TransactionActions: React.FC<Props> = ({
       throw new Error("No web3");
     }
     await confirmTransaction(web3, account, { txIndex });
-    alert("fail");
   });
 
   const revokeConfirmationTx = useAsync(async () => {

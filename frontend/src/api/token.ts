@@ -58,4 +58,5 @@ export async function getBalanceOf(
   const { address } = params;
 
   Token.setProvider(web3.currentProvider);
+  return await Token;
 }
