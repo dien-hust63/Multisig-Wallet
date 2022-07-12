@@ -109,8 +109,8 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
       numConfirmationsRequired: requiredConfirmarion,
       owners: ownerAddrs,
     });
-
-    alert("Success");
+    debugger;
+    alert("Success" + test.toString());
   }
 
   return (
