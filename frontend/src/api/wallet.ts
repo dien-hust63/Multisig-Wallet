@@ -97,7 +97,11 @@ export async function createWallet(
 ) {
   const { name, numConfirmationsRequired, owners } = params;
   Wallet.setProvider(web3.currentProvider);
-  const multiSig = await Wallet.new([name, numConfirmationsRequired, owners]);
+  const multiSig = await Wallet.new([name, numConfirmationsRequired, owners], {
+    from: account,
+    gas: 1500000,
+    gasPrice: "80000000",
+  });
   return multiSig;
 }
 
@@ -129,26 +133,33 @@ export async function submitTransaction(
   Wallet.setProvider(web3.currentProvider);
   const multiSig = await Wallet.deployed();
 
-  await multiSig.submitTransaction(destination, value, data, token, {
-    from: account,
-  });
+  await multiSig.submitTransaction(
+    destination,
+    value,
+    new TextEncoder().encode(data),
+    token,
+    {
+      from: account,
+    }
+  );
 }
 
 export async function confirmTransaction(
-  web3: Web3,
+  web3: Web3 | null,
   account: string,
   params: {
     txIndex: number;
   }
 ) {
   const { txIndex } = params;
+  if (web3) {
+    Wallet.setProvider(web3.currentProvider);
+    const multiSig = await Wallet.deployed();
 
-  Wallet.setProvider(web3.currentProvider);
-  const multiSig = await Wallet.deployed();
-
-  await multiSig.confirmTransaction(txIndex, {
-    from: account,
-  });
+    await multiSig.confirmTransaction(txIndex, {
+      from: account,
+    });
+  }
 }
 
 export async function revokeConfirmation(
