@@ -97,12 +97,24 @@ export async function createWallet(
 ) {
   const { name, numConfirmationsRequired, owners } = params;
   Wallet.setProvider(web3.currentProvider);
-  const multiSig = await Wallet.new([name, numConfirmationsRequired, owners], {
+  const wallet = await Wallet.new(name, numConfirmationsRequired, owners, {
     from: account,
-    gas: 1500000,
-    gasPrice: "80000000",
   });
-  return multiSig;
+  console.log(wallet);
+  return wallet;
+}
+
+export async function importWallet(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+  }
+) {
+  const { address } = params;
+  Wallet.setProvider(web3.currentProvider);
+  const wallet = await Wallet.at(address);
+  return wallet;
 }
 
 export async function getWalletAtAddress(

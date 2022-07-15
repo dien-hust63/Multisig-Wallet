@@ -11,6 +11,19 @@ interface TokenInformation {
   decimals: number;
 }
 
+export async function importToken(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+  }
+) {
+  const { address } = params;
+  Token.setProvider(web3.currentProvider);
+  const token = await Token.at(address);
+  return token;
+}
+
 export async function getTokenInfo(
   web3: Web3,
   address: string

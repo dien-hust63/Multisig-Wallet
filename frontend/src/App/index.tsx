@@ -12,6 +12,7 @@ import WalletDetail from "./components/WalletDetail";
 import DepositForm from "./Form/DepositForm";
 import WithdrawForm from "./Form/WithDrawForm";
 import { useMultiSigWalletContext } from "../contexts/MultiSigWallet";
+import { updateCommaList } from "typescript";
 
 function App() {
   const {
@@ -47,7 +48,9 @@ function App() {
   function depositWallet() {
     setDispositFormOpen(true);
   }
-
+  function updateWalletList(params: string) {
+    alert("update wallet list");
+  }
   return (
     <div className="App">
       <Header backMainDisplay={() => setShowMainDisplay(true)} />
