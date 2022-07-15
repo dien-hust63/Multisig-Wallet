@@ -82,6 +82,8 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm }) => {
         alert(`Error: ${error.message}`);
       } else {
         setDepositValue(0);
+        closeDepositForm();
+        alert("deposit successfully");
       }
     }
   }
