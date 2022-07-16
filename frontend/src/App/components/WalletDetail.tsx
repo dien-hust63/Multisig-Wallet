@@ -11,9 +11,9 @@ function WalletDetail() {
     updateAccount,
   } = useWeb3Context();
   const { state } = useMultiSigWalletContext();
-  const [showRegionOwner, setShowRegionOwners] = useState(false);
-  const [showRegionToken, setShowRegionToken] = useState(false);
-  const [showRegionTrans, setShowRegionTrans] = useState(false);
+  const [showRegionOwner, setShowRegionOwners] = useState(true);
+  const [showRegionToken, setShowRegionToken] = useState(true);
+  const [showRegionTrans, setShowRegionTrans] = useState(true);
   interface ConfirmTransParams {
     txIndex: number;
   }
@@ -39,9 +39,11 @@ function WalletDetail() {
     <div className="wallet-detail">
       <div className="wallet-detail-header">
         <h1>
-          {state.name} {state.balance} ETH
+          Name: {state.name}
+          <br />
+          Balance: {state.balance} ETH
         </h1>
-        <div className="address">{state.address}</div>
+        <div className="address"> Address Wallet: {state.address}</div>
       </div>
       <div className="wallet-detail-body">
         <div className="wallet-detail-region">
@@ -115,11 +117,23 @@ function WalletDetail() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>W2T</td>
-                    <td>0</td>
-                    <td>00</td>
-                  </tr>
+                  {state.tokens.length ? (
+                    state.tokens.map((token) => {
+                      return (
+                        <tr>
+                          <td>W2T</td>
+                          <td>0</td>
+                          <td>00</td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} style={{ textAlign: "center" }}>
+                        Ví chưa quản lý token nào!
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -131,9 +145,9 @@ function WalletDetail() {
               <h4 className="title">Multisig transactions</h4>
             </div>
             <div className="section-right">
-              {/* <Button inverted color="blue">
-              Add
-            </Button> */}
+              <Button inverted color="blue">
+                Add
+              </Button>
               <Button
                 inverted
                 color="blue"
@@ -158,31 +172,39 @@ function WalletDetail() {
                   </tr>
                 </thead>
                 <tbody>
-                  {state.transactions.map((transaction, i) => (
-                    <tr>
-                      <td>{i + 1}</td>
-                      <td>{transaction.destination}</td>
-                      <td>{transaction.value} ETH</td>
-                      <td>{transaction.data}</td>
-                      <td>
-                        <div className="confirm-cell">
-                          <div>{transaction.numConfirmations}</div>
-                          <div>
-                            <Button
-                              color="blue"
-                              onClick={() =>
-                                confirmTransaction1(transaction.txIndex)
-                              }
-                              size="tiny"
-                            >
-                              Confirm
-                            </Button>
+                  {state.transactions.length ? (
+                    state.transactions.map((transaction, i) => (
+                      <tr>
+                        <td>{i + 1}</td>
+                        <td>{transaction.destination}</td>
+                        <td>{transaction.value} ETH</td>
+                        <td>{transaction.data}</td>
+                        <td>
+                          <div className="confirm-cell">
+                            <div>{transaction.numConfirmations}</div>
+                            <div>
+                              <Button
+                                color="blue"
+                                onClick={() =>
+                                  confirmTransaction1(transaction.txIndex)
+                                }
+                                size="tiny"
+                              >
+                                Confirm
+                              </Button>
+                            </div>
                           </div>
-                        </div>
+                        </td>
+                        <td>{transaction.executed}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: "center" }}>
+                        Chưa có giao dịch nào được thực hiện!
                       </td>
-                      <td>{transaction.executed}</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

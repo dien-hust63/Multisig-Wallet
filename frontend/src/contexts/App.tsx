@@ -28,12 +28,6 @@ const INIT_STATE: State = {
       balance: 100,
       numConfirmationsRequired: 2,
     },
-    {
-      name: "DIEN WALLET",
-      address: "0x93e8c035f85fe7f1f0104a01de41c3a4bc4b46f8",
-      balance: 100,
-      numConfirmationsRequired: 2,
-    },
   ],
 };
 
