@@ -34,13 +34,11 @@ function useAsync<Params, Response>(
 
     try {
       const data = await req(params);
-
       setState((state) => ({
         ...state,
         pending: false,
         data,
       }));
-
       return { data };
     } catch (error) {
       setState((state) => ({

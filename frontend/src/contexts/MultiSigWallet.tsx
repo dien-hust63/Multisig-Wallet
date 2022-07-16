@@ -276,20 +276,20 @@ export function Updater() {
   const { state, set, updateBalance, addTx, updateTx } =
     useMultiSigWalletContext();
 
-  useEffect(() => {
-    async function get(web3: Web3, account: string, wallet: string) {
-      try {
-        const data = await getMultiSigWallet(web3, account, wallet);
-        set(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
+  // useEffect(() => {
+  //   async function get(web3: Web3, account: string, wallet: string) {
+  //     try {
+  //       const data = await getMultiSigWallet(web3, account, wallet);
+  //       set(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
 
-    if (web3) {
-      get(web3, account, "addd");
-    }
-  }, [web3]);
+  //   if (web3) {
+  //     get(web3, account, "addd");
+  //   }
+  // }, [web3]);
 
   useEffect(() => {
     if (web3 && state.address) {

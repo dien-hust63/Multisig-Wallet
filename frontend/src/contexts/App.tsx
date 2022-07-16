@@ -17,22 +17,22 @@ interface Wallet {
   name: string;
   address: string;
   balance: number;
-  required_confirmation: number;
+  numConfirmationsRequired: number;
 }
 
 const INIT_STATE: State = {
   wallets: [
     {
       name: "DKT",
-      address: "0x93e8c035f85fe7f1f0104a01de41c3a4bc4b46f4",
+      address: "0xc2eec85f0f3463231017748c52547f1c14e923ad",
       balance: 100,
-      required_confirmation: 2,
+      numConfirmationsRequired: 2,
     },
     {
       name: "DIEN WALLET",
       address: "0x93e8c035f85fe7f1f0104a01de41c3a4bc4b46f8",
       balance: 100,
-      required_confirmation: 2,
+      numConfirmationsRequired: 2,
     },
   ],
 };
@@ -55,7 +55,7 @@ interface AddWallet {
     name: string;
     address: string;
     balance: number;
-    required_confirmation: number;
+    numConfirmationsRequired: number;
   };
 }
 
@@ -65,7 +65,7 @@ interface UpdateWallet {
     name: string;
     address: string;
     balance: number;
-    required_confirmation: number;
+    numConfirmationsRequired: number;
   };
 }
 
@@ -118,7 +118,7 @@ interface AddWalletInputs {
   name: string;
   address: string;
   balance: number;
-  required_confirmation: number;
+  numConfirmationsRequired: number;
 }
 
 const AppContext = createContext({

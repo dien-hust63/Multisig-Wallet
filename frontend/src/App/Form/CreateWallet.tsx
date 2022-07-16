@@ -3,6 +3,7 @@ import Web3 from "web3";
 import BN from "bn.js";
 import { Button, ButtonProps, Form } from "semantic-ui-react";
 import { useWeb3Context } from "../../contexts/Web3";
+import { useAppContext } from "../../contexts/App";
 import useAsync from "../../components/useAsync";
 import { deposit } from "../../api/wallet";
 import "../../css/form/createwallet.css";
@@ -25,7 +26,7 @@ interface Owners {
 interface Wallet {
   address?: string;
   name: string;
-  requiredConfirm: BN;
+  numConfirmationsRequired: BN;
   accounts: Owners[];
 }
 
@@ -40,6 +41,11 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
     state: { web3, account },
   } = useWeb3Context();
 
+  const {
+    state: { wallets },
+    addWallet,
+  } = useAppContext();
+
   const [name, setName] = useState("");
   const [requiredConfirmarion, setRequiredConfirmation] = useState(0);
   const [owners, setOwners] = useState<Owners[]>([
@@ -48,7 +54,6 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
       address: account,
     },
   ]);
-  const [wallet, setWallet] = useState<Wallet>();
   // const { pending, call } = useAsync<depositParams, void>(
   //   ({ web3, account, value, wallet }) =>
   //     deposit(web3, account, { value, wallet })
@@ -131,9 +136,13 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
         numConfirmationsRequired: requiredConfirmarion,
         owners: ownerAddrs,
       });
-      debugger;
-      // biến wallet chính là ví lấy đc đó
-      // TODO, cần add vào danh sách các ví
+      addWallet({
+        name: wallet.name,
+        address: wallet.address,
+        balance: parseInt(wallet.balance),
+        numConfirmationsRequired: wallet.numConfirmationsRequired,
+      });
+      closeCreateWalletForm();
     } else {
       alert("no web3");
     }
@@ -184,7 +193,7 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
               <tbody>
                 {owners.map((owner, index) => {
                   return (
-                    <tr>
+                    <tr key={owner.address}>
                       <td>
                         <input
                           type="text"

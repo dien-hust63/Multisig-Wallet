@@ -58,7 +58,7 @@ function App() {
     if (!web3) {
       throw new Error("No web3");
     }
-    await get(web3, account, params);
+    return await get(web3, account, params);
   });
 
   async function openWalletDetail(wallet: string) {
@@ -124,7 +124,7 @@ function App() {
                         <td>
                           <div className="required-confirm">
                             <div className="number-required">
-                              {wallet.required_confirmation}
+                              {wallet.numConfirmationsRequired}
                             </div>
                             {/* <Button
                               color="grey"
