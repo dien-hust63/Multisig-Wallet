@@ -300,6 +300,7 @@ interface SubmitTransaction {
     destination: string;
     value: string;
     data: string;
+    token: string;
   };
 }
 

@@ -25,11 +25,11 @@ interface Transaction {
   txIndex: number;
   destination: string;
   value: BN;
-  token: string;
   data: string;
   executed: boolean;
   numConfirmations: number;
   isConfirmedByCurrentAccount: boolean;
+  token: string;
 }
 
 const INITIAL_STATE: State = {
@@ -51,8 +51,6 @@ const UPDATE_TX = "UPDATE_TX";
 interface Set {
   type: "SET";
   data: {
-    name: string;
-    tokens: [];
     address: string;
     balance: string;
     owners: string[];
@@ -76,6 +74,7 @@ interface AddTx {
     destination: string;
     value: string;
     data: string;
+    token: string;
   };
 }
 
@@ -108,7 +107,7 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
     }
     case ADD_TX: {
       const {
-        data: { txIndex, destination, value, data },
+        data: { txIndex, destination, value, data, token },
       } = action;
 
       const transactions = [
@@ -120,6 +119,7 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
           executed: false,
           numConfirmations: 0,
           isConfirmedByCurrentAccount: false,
+          token: token,
         },
         ...state.transactions,
       ];
@@ -178,8 +178,6 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
 }
 
 interface SetInputs {
-  name: string;
-  tokens: string[];
   address: string;
   balance: string;
   owners: string[];
@@ -197,6 +195,7 @@ interface AddTxInputs {
   destination: string;
   value: string;
   data: string;
+  token: string;
 }
 
 interface UpdateTxInputs {
@@ -295,7 +294,6 @@ export function Updater() {
   useEffect(() => {
     if (web3 && state.address) {
       return subscribe(web3, state.address, (error, log) => {
-        debugger;
         if (error) {
           console.error(error);
         } else if (log) {
