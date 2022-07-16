@@ -10,17 +10,21 @@ import {
   Provider as MultiSigWalletProvider,
   Updater as MultiSigWalletUpdater,
 } from "./contexts/MultiSigWallet";
+import { Provider as AppProvider, Updater as AppUpdater } from "./contexts/App";
+
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
   <React.StrictMode>
     <Web3Provider>
-      <MultiSigWalletProvider>
-        <App />
-        <Web3Updater />
-        <MultiSigWalletUpdater />
-      </MultiSigWalletProvider>
+      <AppProvider>
+        <MultiSigWalletProvider>
+          <App />
+          <Web3Updater />
+          <MultiSigWalletUpdater />
+        </MultiSigWalletProvider>
+      </AppProvider>
     </Web3Provider>
   </React.StrictMode>,
   document.getElementById("root")

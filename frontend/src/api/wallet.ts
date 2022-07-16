@@ -18,6 +18,7 @@ interface Transaction {
 }
 
 interface GetResponse {
+  name: string;
   address: string;
   balance: string;
   owners: string[];
@@ -27,13 +28,18 @@ interface GetResponse {
   transactions: Transaction[];
 }
 
-export async function get(web3: Web3, account: string): Promise<GetResponse> {
+export async function get(
+  web3: Web3,
+  account: string,
+  wallet: string
+): Promise<GetResponse> {
   Wallet.setProvider(web3.currentProvider);
 
-  const multiSig = await Wallet.deployed();
+  const multiSig = await Wallet.at(wallet);
 
   const balance = await web3.eth.getBalance(multiSig.address);
   const owners = await multiSig.getOwners();
+  const name = await multiSig.getName();
   const tokens = await multiSig.getTokens();
   const numConfirmationsRequired = await multiSig.numConfirmationsRequired();
   const transactionCount = await multiSig.getTransactionCount();
@@ -63,6 +69,7 @@ export async function get(web3: Web3, account: string): Promise<GetResponse> {
   }
 
   return {
+    name,
     address: multiSig.address,
     balance,
     owners,
@@ -77,13 +84,15 @@ export async function deposit(
   web3: Web3,
   account: string,
   params: {
+    wallet: string;
     value: BN;
   }
 ) {
+  const { wallet, value } = params;
   Wallet.setProvider(web3.currentProvider);
-  const multiSig = await Wallet.deployed();
+  const multiSig = await Wallet.at(wallet);
 
-  await multiSig.sendTransaction({ from: account, value: params.value });
+  await multiSig.sendTransaction({ from: account, value });
 }
 
 export async function createWallet(
@@ -100,7 +109,7 @@ export async function createWallet(
   const wallet = await Wallet.new(name, numConfirmationsRequired, owners, {
     from: account,
   });
-  console.log(wallet);
+  //define interface { name, add}
   return wallet;
 }
 
@@ -133,17 +142,18 @@ export async function submitTransaction(
   web3: Web3,
   account: string,
   params: {
+    wallet: string;
     destination: string;
     // NOTE: error when passing BN type, so pass string
-    value: number;
+    value: string;
     data: string;
     token: string;
   }
 ) {
-  const { destination, value, data, token } = params;
+  const { destination, value, data, token, wallet } = params;
 
   Wallet.setProvider(web3.currentProvider);
-  const multiSig = await Wallet.deployed();
+  const multiSig = await Wallet.at(wallet);
 
   await multiSig.submitTransaction(
     destination,
@@ -160,13 +170,14 @@ export async function confirmTransaction(
   web3: Web3 | null,
   account: string,
   params: {
+    wallet: string;
     txIndex: number;
   }
 ) {
-  const { txIndex } = params;
+  const { txIndex, wallet } = params;
   if (web3) {
     Wallet.setProvider(web3.currentProvider);
-    const multiSig = await Wallet.deployed();
+    const multiSig = await Wallet.at(wallet);
 
     await multiSig.confirmTransaction(txIndex, {
       from: account,
@@ -178,13 +189,14 @@ export async function revokeConfirmation(
   web3: Web3,
   account: string,
   params: {
+    wallet: string;
     txIndex: number;
   }
 ) {
-  const { txIndex } = params;
+  const { txIndex, wallet } = params;
 
   Wallet.setProvider(web3.currentProvider);
-  const multiSig = await Wallet.deployed();
+  const multiSig = await Wallet.at(wallet);
 
   await multiSig.revokeConfirmation(txIndex, {
     from: account,
@@ -195,6 +207,7 @@ export async function executeTransaction(
   web3: Web3,
   account: string,
   params: {
+    wallet: string;
     txIndex: number;
   }
 ) {
@@ -202,10 +215,10 @@ export async function executeTransaction(
     Exercise
     Write code that will call executeTransaction on MultiSigWallet contract
     */
-  const { txIndex } = params;
+  const { txIndex, wallet } = params;
 
   Wallet.setProvider(web3.currentProvider);
-  const multiSig = await Wallet.deployed();
+  const multiSig = await Wallet.at(wallet);
 
   await multiSig.executeTransaction(txIndex, {
     from: account,
@@ -216,16 +229,17 @@ export async function createToken(
   web3: Web3,
   account: string,
   params: {
+    wallet: string;
     name: string;
     symbol: string;
     decimals: number;
     total: number;
   }
 ) {
-  const { name, symbol, decimals, total } = params;
+  const { name, symbol, decimals, total, wallet } = params;
 
   Wallet.setProvider(web3.currentProvider);
-  const multiSig = await Wallet.deployed();
+  const multiSig = await Wallet.at(wallet);
 
   await multiSig.createToken(name, symbol, decimals, total, {
     from: account,
@@ -236,11 +250,12 @@ export async function getBalanceOfToken(
   web3: Web3,
   account: string,
   params: {
+    wallet: string;
     addressToken: string;
     addrWallet: string;
   }
 ) {
-  const { addrWallet, addressToken } = params;
+  const { addrWallet, addressToken, wallet } = params;
 
   Wallet.setProvider(web3.currentProvider);
   const multiSig = await Wallet.deployed();
@@ -282,7 +297,7 @@ interface SubmitTransaction {
   returnValues: {
     owner: string;
     txIndex: string;
-    to: string;
+    destination: string;
     value: string;
     data: string;
   };

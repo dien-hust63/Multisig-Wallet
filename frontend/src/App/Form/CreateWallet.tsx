@@ -4,7 +4,7 @@ import BN from "bn.js";
 import { Button, ButtonProps, Form } from "semantic-ui-react";
 import { useWeb3Context } from "../../contexts/Web3";
 import useAsync from "../../components/useAsync";
-import { deposit } from "../../api/multi-sig-wallet";
+import { deposit } from "../../api/wallet";
 import "../../css/form/createwallet.css";
 import { createWallet } from "../../api/wallet";
 interface Props {
@@ -15,6 +15,7 @@ interface depositParams {
   web3: Web3;
   account: string;
   value: BN;
+  wallet: string;
 }
 
 interface Owners {
@@ -48,7 +49,8 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
   ]);
   const [wallet, setWallet] = useState<Wallet>();
   const { pending, call } = useAsync<depositParams, void>(
-    ({ web3, account, value }) => deposit(web3, account, { value })
+    ({ web3, account, value, wallet }) =>
+      deposit(web3, account, { value, wallet })
   );
 
   const {
@@ -110,6 +112,7 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
       owners: ownerAddrs,
     });
     closeCreateWalletForm();
+    // use app context update wallet list
     alert("Success" + test.toString());
   }
 

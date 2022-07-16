@@ -9,6 +9,7 @@ import {
 } from "../api/wallet";
 
 interface Props {
+  wallet: string;
   numConfirmationsRequired: number;
   tx: {
     txIndex: number;
@@ -21,6 +22,7 @@ interface Props {
 const TransactionActions: React.FC<Props> = ({
   numConfirmationsRequired,
   tx,
+  wallet,
 }) => {
   const {
     state: { web3, account },
@@ -32,7 +34,7 @@ const TransactionActions: React.FC<Props> = ({
     if (!web3) {
       throw new Error("No web3");
     }
-    await confirmTransaction(web3, account, { txIndex });
+    await confirmTransaction(web3, account, { txIndex, wallet });
   });
 
   const revokeConfirmationTx = useAsync(async () => {
@@ -40,7 +42,7 @@ const TransactionActions: React.FC<Props> = ({
       throw new Error("No web3");
     }
 
-    await revokeConfirmation(web3, account, { txIndex });
+    await revokeConfirmation(web3, account, { txIndex, wallet });
   });
 
   const executeTx = useAsync(async () => {
@@ -48,7 +50,7 @@ const TransactionActions: React.FC<Props> = ({
       throw new Error("No web3");
     }
 
-    await executeTransaction(web3, account, { txIndex });
+    await executeTransaction(web3, account, { txIndex, wallet });
   });
 
   if (tx.executed) {

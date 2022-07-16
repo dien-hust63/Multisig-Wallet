@@ -26,11 +26,12 @@ function MultiSigWallet() {
         Create Transaction
       </Button>
       {open && <CreateTxModal open={open} onClose={() => openModal(false)} />}
-      <TransactionList
+      {/* <TransactionList
         numConfirmationsRequired={state.numConfirmationsRequired}
         data={state.transactions}
         count={state.transactionCount}
-      />
+        wallet={state.address}
+      /> */}
     </div>
   );
 }

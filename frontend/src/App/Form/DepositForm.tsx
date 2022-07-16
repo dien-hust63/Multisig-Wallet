@@ -9,22 +9,26 @@ import "../../css/form/depositform.css";
 
 interface Props {
   closeDepositForm: () => void;
+  wallet: string;
 }
 
 interface DepositParams {
   web3: Web3;
   account: string;
   value: BN;
+  wallet: string;
 }
 
-const DepositForm: React.FC<Props> = ({ closeDepositForm }) => {
+const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
   const {
     state: { web3, account },
   } = useWeb3Context();
 
   const [depositValue, setDepositValue] = useState(0);
+  const walletAddr = wallet;
   const { pending, call } = useAsync<DepositParams, void>(
-    ({ web3, account, value }) => deposit(web3, account, { value })
+    ({ web3, account, value, wallet }) =>
+      deposit(web3, account, { value, wallet })
   );
 
   function changeDepositValue(e: React.ChangeEvent<HTMLInputElement>) {
@@ -48,6 +52,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm }) => {
         web3,
         account,
         value,
+        wallet: walletAddr,
       });
 
       if (error) {
@@ -59,7 +64,6 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm }) => {
   }
 
   async function depositWallet() {
-    debugger;
     if (pending) {
       return;
     }
@@ -76,6 +80,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm }) => {
         web3,
         account,
         value,
+        wallet: walletAddr,
       });
 
       if (error) {
@@ -97,6 +102,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm }) => {
         <div className="form-body">
           <Form>
             <Form.Field>
+              <div>Wallet Address: {wallet} </div>
               <label>Amount(Wei)</label>
               <Form.Input
                 placeholder=""

@@ -4,7 +4,8 @@ import TransactionActions from "./TransactionActions";
 
 interface Transaction {
   txIndex: number;
-  to: string;
+  destination: string;
+  token: string;
   value: BN;
   data: string;
   executed: boolean;
@@ -16,19 +17,21 @@ interface Props {
   numConfirmationsRequired: number;
   count: number;
   data: Transaction[];
+  wallet: string;
 }
 
 const TransactionList: React.FC<Props> = ({
   numConfirmationsRequired,
   count,
-  data
+  data,
+  wallet,
 }) => {
   return (
     <ul>
-      {data.map(tx => (
+      {data.map((tx) => (
         <li key={tx.txIndex}>
           <div>Tx Index: {tx.txIndex}</div>
-          <div>To: {tx.to}</div>
+          <div>Destination: {tx.destination}</div>
           <div>Value: {tx.value.toString()}</div>
           <div>Data: {tx.data}</div>
           <div>Executed: {tx.executed.toString()}</div>
@@ -36,6 +39,7 @@ const TransactionList: React.FC<Props> = ({
           <TransactionActions
             numConfirmationsRequired={numConfirmationsRequired}
             tx={tx}
+            wallet={wallet}
           />
         </li>
       ))}

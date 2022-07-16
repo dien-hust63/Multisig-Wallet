@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Modal, Form, Message } from "semantic-ui-react";
 import useAsync from "../components/useAsync";
 import { useWeb3Context } from "../contexts/Web3";
-import { submitTx } from "../api/multi-sig-wallet";
+import { submitTransaction } from "../api/wallet";
 
 interface Props {
   open: boolean;
@@ -10,9 +10,11 @@ interface Props {
 }
 
 interface SubmitTxParams {
-  to: string;
+  destination: string;
   value: string;
   data: string;
+  wallet: string;
+  token: string;
 }
 
 const CreateTxModal: React.FC<Props> = ({ open, onClose }) => {
@@ -26,14 +28,16 @@ const CreateTxModal: React.FC<Props> = ({ open, onClose }) => {
         throw new Error("No web3");
       }
 
-      await submitTx(web3, account, params);
+      await submitTransaction(web3, account, params);
     }
   );
 
   const [inputs, setInputs] = useState({
-    to: "",
-    value: 0,
+    destination: "",
+    value: "0",
     data: "",
+    wallet: "",
+    token: "",
   });
 
   function onChange(name: string, e: React.ChangeEvent<HTMLInputElement>) {
@@ -65,10 +69,10 @@ const CreateTxModal: React.FC<Props> = ({ open, onClose }) => {
         {error && <Message error>{error.message}</Message>}
         <Form onSubmit={onSubmit}>
           <Form.Field>
-            <label>To</label>
+            <label>Destination</label>
             <Form.Input
               type="text"
-              value={inputs.to}
+              value={inputs.destination}
               onChange={(e) => onChange("to", e)}
             />
           </Form.Field>

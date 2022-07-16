@@ -9,16 +9,18 @@ import "../../css/form/withdrawform.css";
 
 interface Props {
   closeWithDrawForm: () => void;
+  wallet: string;
 }
 
 interface WithDrawParams {
   destination: string;
-  value: number;
+  value: string;
   data: string;
   token: string;
+  wallet: string;
 }
 
-const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm }) => {
+const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
   const {
     state: { web3, account },
   } = useWeb3Context();
@@ -55,10 +57,11 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm }) => {
 
     if (value.gt(zero)) {
       const { error } = await withdrawCall({
-        value: withDrawValue,
+        value: withDrawValue.toString(),
         destination: address,
         data: "sdasdas",
         token: "0x0000000000000000000000000000000000000000",
+        wallet,
       });
 
       if (error) {
@@ -84,10 +87,11 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm }) => {
 
     if (value.gt(zero)) {
       const { error } = await withdrawCall({
-        value: withDrawValue,
+        value: withDrawValue.toString(),
         destination: address,
         data: "sdasdas",
         token: "0x0000000000000000000000000000000000000000",
+        wallet,
       });
 
       if (error) {
@@ -107,6 +111,7 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm }) => {
         <div className="form-body">
           <Form>
             <Form.Field>
+              <div>Wallet Address: {wallet}</div>
               <label>Amount(Wei)</label>
               <Form.Input
                 placeholder=""

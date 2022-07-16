@@ -13,13 +13,21 @@ import DepositForm from "./Form/DepositForm";
 import WithdrawForm from "./Form/WithDrawForm";
 import { useMultiSigWalletContext } from "../contexts/MultiSigWallet";
 import { updateCommaList } from "typescript";
+import { useAppContext } from "../contexts/App";
+import { get } from "../api/wallet";
 
 function App() {
   const {
-    state: { account, netId },
+    state: { web3, account, netId },
     updateAccount,
   } = useWeb3Context();
-  const { state } = useMultiSigWalletContext();
+
+  const {
+    state: { wallets },
+    addWallet,
+  } = useAppContext();
+
+  const { state, set } = useMultiSigWalletContext();
   const [walletOpen, setWalletOpen] = useState(false);
   const [showMainDisplay, setShowMainDisplay] = useState(true);
   const [depositFormOpen, setDispositFormOpen] = useState(false);
@@ -41,7 +49,27 @@ function App() {
     setWalletOpen(true);
   }
 
-  function openWalletDetail() {
+  const {
+    pending: walletP,
+    error: walletErr,
+    call: getWalletCall,
+  } = useAsync<string, any>(async (params) => {
+    if (!web3) {
+      throw new Error("No web3");
+    }
+    await get(web3, account, params);
+  });
+
+  async function openWalletDetail(wallet: string) {
+    const { error, data } = await getWalletCall(wallet);
+    if (error) {
+      console.error(error);
+      return;
+    }
+    console.log(data);
+    if (data) {
+      set(data);
+    }
     setShowMainDisplay(false);
   }
 
@@ -77,42 +105,50 @@ function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td
-                      onClick={openWalletDetail}
-                      className="change-detail-link"
-                    >
-                      Hust Wallet
-                    </td>
-                    <td>0xa3A70BCaDb48E17b38259e27E89564d74F05dBab</td>
-                    <td> {state.balance} ETH</td>
-                    <td>
-                      <div className="required-confirm">
-                        <div className="number-required">
-                          {state.numConfirmationsRequired}
-                        </div>
-                        <Button
-                          color="grey"
-                          onClick={depositWallet}
-                          size="tiny"
+                  {wallets.map((wallet) => {
+                    return (
+                      <tr key={wallet.address}>
+                        <td
+                          onClick={() => openWalletDetail(wallet.address)}
+                          className="change-detail-link"
                         >
-                          Edit
-                        </Button>
-                      </div>
-                    </td>
-                    <td>
-                      <Button color="blue" onClick={depositWallet} size="tiny">
-                        Deposit
-                      </Button>
-                      <Button
-                        color="grey"
-                        onClick={() => setWithDrawFormOpen(true)}
-                        size="tiny"
-                      >
-                        Withdraw
-                      </Button>
-                    </td>
-                  </tr>
+                          {wallet.name}
+                        </td>
+                        <td>{wallet.address}</td>
+                        <td>{wallet.balance}</td>
+                        <td>
+                          <div className="required-confirm">
+                            <div className="number-required">
+                              {wallet.required_confirmation}
+                            </div>
+                            <Button
+                              color="grey"
+                              onClick={depositWallet}
+                              size="tiny"
+                            >
+                              Edit
+                            </Button>
+                          </div>
+                        </td>
+                        <td>
+                          <Button
+                            color="blue"
+                            onClick={depositWallet}
+                            size="tiny"
+                          >
+                            Deposit
+                          </Button>
+                          <Button
+                            color="grey"
+                            onClick={() => setWithDrawFormOpen(true)}
+                            size="tiny"
+                          >
+                            Withdraw
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -125,10 +161,17 @@ function App() {
         <CreateWalletForm closeCreateWalletForm={() => setWalletOpen(false)} />
       ) : null}
       {depositFormOpen ? (
-        <DepositForm closeDepositForm={() => setDispositFormOpen(false)} />
+        // Change address here
+        <DepositForm
+          closeDepositForm={() => setDispositFormOpen(false)}
+          wallet="0x5deE543014058D3d4CdA46454dEe1662DDD13198"
+        />
       ) : null}
       {withdrawFormOpen ? (
-        <WithdrawForm closeWithDrawForm={() => setWithDrawFormOpen(false)} />
+        <WithdrawForm
+          closeWithDrawForm={() => setWithDrawFormOpen(false)}
+          wallet="0x5deE543014058D3d4CdA46454dEe1662DDD13198"
+        />
       ) : null}
       {/* <Footer /> */}
     </div>

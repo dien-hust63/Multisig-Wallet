@@ -8,11 +8,11 @@ import React, {
   useMemo,
 } from "react";
 import { useWeb3Context } from "./Web3";
-import { get as getMultiSigWallet, subscribe } from "../api/multi-sig-wallet";
+import { get as getMultiSigWallet, subscribe } from "../api/wallet";
 
 interface State {
   name: string;
-  tokens: [];
+  tokens: string[];
   address: string;
   balance: string;
   owners: string[];
@@ -23,8 +23,9 @@ interface State {
 
 interface Transaction {
   txIndex: number;
-  to: string;
+  destination: string;
   value: BN;
+  token: string;
   data: string;
   executed: boolean;
   numConfirmations: number;
@@ -72,7 +73,7 @@ interface AddTx {
   type: "ADD_TX";
   data: {
     txIndex: string;
-    to: string;
+    destination: string;
     value: string;
     data: string;
   };
@@ -107,13 +108,13 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
     }
     case ADD_TX: {
       const {
-        data: { txIndex, to, value, data },
+        data: { txIndex, destination, value, data },
       } = action;
 
       const transactions = [
         {
           txIndex: parseInt(txIndex),
-          to,
+          destination,
           value: Web3.utils.toBN(value),
           data,
           executed: false,
@@ -178,7 +179,7 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
 
 interface SetInputs {
   name: string;
-  tokens: [];
+  tokens: string[];
   address: string;
   balance: string;
   owners: string[];
@@ -193,7 +194,7 @@ interface UpdateBalanceInputs {
 
 interface AddTxInputs {
   txIndex: string;
-  to: string;
+  destination: string;
   value: string;
   data: string;
 }
@@ -277,9 +278,9 @@ export function Updater() {
     useMultiSigWalletContext();
 
   useEffect(() => {
-    async function get(web3: Web3, account: string) {
+    async function get(web3: Web3, account: string, wallet: string) {
       try {
-        const data = await getMultiSigWallet(web3, account);
+        const data = await getMultiSigWallet(web3, account, wallet);
         set(data);
       } catch (error) {
         console.error(error);
@@ -287,7 +288,7 @@ export function Updater() {
     }
 
     if (web3) {
-      get(web3, account);
+      get(web3, account, "addd");
     }
   }, [web3]);
 

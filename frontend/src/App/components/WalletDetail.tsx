@@ -32,12 +32,15 @@ function WalletDetail() {
   async function confirmTransaction1(txIndex: number) {
     const test = await confirmTransaction(web3, account, {
       txIndex: txIndex,
+      wallet: state.address,
     });
   }
   return (
     <div className="wallet-detail">
       <div className="wallet-detail-header">
-        <h1>Hust Wallet {state.balance} ETH</h1>
+        <h1>
+          {state.name} {state.balance} ETH
+        </h1>
         <div className="address">{state.address}</div>
       </div>
       <div className="wallet-detail-body">
@@ -158,7 +161,7 @@ function WalletDetail() {
                   {state.transactions.map((transaction, i) => (
                     <tr>
                       <td>{i + 1}</td>
-                      <td>{transaction.to}</td>
+                      <td>{transaction.destination}</td>
                       <td>{transaction.value} ETH</td>
                       <td>{transaction.data}</td>
                       <td>
