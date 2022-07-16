@@ -48,6 +48,7 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
 
   const [name, setName] = useState("");
   const [requiredConfirmarion, setRequiredConfirmation] = useState(0);
+  const [pendingCreateWallet, setPendingCreateWallet] = useState(false);
   const [owners, setOwners] = useState<Owners[]>([
     {
       name: "My Account",
@@ -131,17 +132,20 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
     // }
     // nvdien: gọi qua useAsync ko lấy được data nên thử qua cách gọi API trực tiếp
     if (web3) {
+      setPendingCreateWallet(true);
       const wallet = await createWallet(web3, account, {
         name: name,
         numConfirmationsRequired: requiredConfirmarion,
         owners: ownerAddrs,
       });
+      setPendingCreateWallet(false);
       addWallet({
         name: wallet.name,
         address: wallet.address,
         balance: parseInt(wallet.balance),
         numConfirmationsRequired: wallet.numConfirmationsRequired,
       });
+      alert("create wallet successfully");
       closeCreateWalletForm();
     } else {
       alert("no web3");
@@ -211,8 +215,8 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
                       <td>
                         <Button
                           color="red"
-                          disabled={walletP}
-                          loading={walletP}
+                          disabled={pendingCreateWallet}
+                          loading={pendingCreateWallet}
                           onClick={() => removeOwner(index)}
                         >
                           Remove
@@ -229,16 +233,16 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
         <div className="form-footer">
           <Button
             color="blue"
-            disabled={walletP}
-            loading={walletP}
+            disabled={pendingCreateWallet}
+            loading={pendingCreateWallet}
             onClick={createWalletHandler}
           >
             Create
           </Button>
           <Button
             color="red"
-            disabled={walletP}
-            loading={walletP}
+            disabled={pendingCreateWallet}
+            loading={pendingCreateWallet}
             onClick={closeCreateWalletForm}
           >
             Cancel

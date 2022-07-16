@@ -11,6 +11,13 @@ interface TokenInformation {
   decimals: number;
 }
 
+interface Token {
+  name: string;
+  symbol: string;
+  decimals: number;
+  totalSupply: number;
+}
+
 export async function importToken(
   web3: Web3,
   account: string,
@@ -46,12 +53,7 @@ export async function getTokenInfo(
 export async function createToken(
   web3: Web3,
   account: string,
-  params: {
-    name: string;
-    symbol: number;
-    decimals: number;
-    totalSupply: number;
-  }
+  params: Token
 ) {
   const { name, symbol, decimals, totalSupply } = params;
 

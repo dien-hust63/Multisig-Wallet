@@ -107,11 +107,11 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
       <div className="withdraw-form">
         <div className="form-header">
           <h1>Withdraw</h1>
+          <h2>Wallet Address: {wallet}</h2>
         </div>
         <div className="form-body">
           <Form>
             <Form.Field>
-              <h2>Wallet Address: {wallet}</h2>
               <label>Amount(Wei)</label>
               <Form.Input
                 placeholder=""

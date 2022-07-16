@@ -5,6 +5,7 @@ import { useWeb3Context } from "../../contexts/Web3";
 import "../../css/components/walletdetail.css";
 import useAsync from "../../components/useAsync";
 import { confirmTransaction } from "../../api/wallet";
+import CreateTokenForm from "../Form/CreateToken";
 function WalletDetail() {
   const {
     state: { web3, account, balance, netId },
@@ -14,6 +15,7 @@ function WalletDetail() {
   const [showRegionOwner, setShowRegionOwners] = useState(true);
   const [showRegionToken, setShowRegionToken] = useState(true);
   const [showRegionTrans, setShowRegionTrans] = useState(true);
+  const [tokenOpen, setTokenOpen] = useState(false);
   interface ConfirmTransParams {
     txIndex: number;
   }
@@ -35,6 +37,7 @@ function WalletDetail() {
       wallet: state.address,
     });
   }
+
   return (
     <div className="wallet-detail">
       <div className="wallet-detail-header">
@@ -93,7 +96,7 @@ function WalletDetail() {
               <h4 className="title">Tokens</h4>
             </div>
             <div className="section-right">
-              <Button inverted color="blue">
+              <Button inverted color="blue" onClick={() => setTokenOpen(true)}>
                 Add
               </Button>
               <Button
@@ -211,6 +214,12 @@ function WalletDetail() {
           ) : null}
         </div>
       </div>
+      {tokenOpen ? (
+        <CreateTokenForm
+          closeTokenForm={() => setTokenOpen(false)}
+          wallet={"fixtam"}
+        />
+      ) : null}
     </div>
   );
 }
