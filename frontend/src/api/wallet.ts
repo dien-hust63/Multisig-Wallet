@@ -53,6 +53,7 @@ export async function get(
     }
 
     const tx = await multiSig.getTransaction(txIndex);
+    console.log(tx);
     const isConfirmed = await multiSig.isConfirmed(txIndex, account);
 
     transactions.push({
@@ -62,7 +63,7 @@ export async function get(
       data: tx.data,
       token: tx.token,
       executed: tx.executed,
-      numConfirmations: tx.numConfirmations.toNumber(),
+      numConfirmations: 1,
       isConfirmedByCurrentAccount: isConfirmed,
     });
   }

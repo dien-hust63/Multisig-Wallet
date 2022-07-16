@@ -31,7 +31,7 @@ function App() {
   const [chosenWallet, setChosenWallet] = useState("");
   const [walletOpen, setWalletOpen] = useState(false);
   const [showMainDisplay, setShowMainDisplay] = useState(true);
-  const [depositFormOpen, setDispositFormOpen] = useState(false);
+  const [depositFormOpen, setDepositFormOpen] = useState(false);
   const [withdrawFormOpen, setWithDrawFormOpen] = useState(false);
   const { pending, error, call } = useAsync(unlockAccount);
 
@@ -79,8 +79,17 @@ function App() {
     walletAddr: string
   ) {
     setChosenWallet(walletAddr);
-    setDispositFormOpen(true);
+    setDepositFormOpen(true);
   }
+
+  function withdrawWallet(
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    walletAddr: string
+  ) {
+    setChosenWallet(walletAddr);
+    setWithDrawFormOpen(true);
+  }
+
   function updateWalletList(params: string) {
     alert("update wallet list");
   }
@@ -145,7 +154,7 @@ function App() {
                           </Button>
                           <Button
                             color="grey"
-                            onClick={() => setWithDrawFormOpen(true)}
+                            onClick={(e) => withdrawWallet(e, wallet.address)}
                             size="tiny"
                           >
                             Withdraw
@@ -166,16 +175,15 @@ function App() {
         <CreateWalletForm closeCreateWalletForm={() => setWalletOpen(false)} />
       ) : null}
       {depositFormOpen ? (
-        // Change address here
         <DepositForm
-          closeDepositForm={() => setDispositFormOpen(false)}
+          closeDepositForm={() => setDepositFormOpen(false)}
           wallet={chosenWallet}
         />
       ) : null}
       {withdrawFormOpen ? (
         <WithdrawForm
           closeWithDrawForm={() => setWithDrawFormOpen(false)}
-          wallet="0x5deE543014058D3d4CdA46454dEe1662DDD13198"
+          wallet={chosenWallet}
         />
       ) : null}
       {/* <Footer /> */}
