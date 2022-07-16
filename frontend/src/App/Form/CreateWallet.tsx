@@ -23,6 +23,7 @@ interface Owners {
   address: string;
 }
 interface Wallet {
+  address?: string;
   name: string;
   requiredConfirm: BN;
   accounts: Owners[];
@@ -48,10 +49,10 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
     },
   ]);
   const [wallet, setWallet] = useState<Wallet>();
-  const { pending, call } = useAsync<depositParams, void>(
-    ({ web3, account, value, wallet }) =>
-      deposit(web3, account, { value, wallet })
-  );
+  // const { pending, call } = useAsync<depositParams, void>(
+  //   ({ web3, account, value, wallet }) =>
+  //     deposit(web3, account, { value, wallet })
+  // );
 
   const {
     pending: walletP,
@@ -106,14 +107,36 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
   }
   async function createWalletHandler() {
     const ownerAddrs = owners.map((i) => i.address);
-    const test = await walletCall({
-      name,
-      numConfirmationsRequired: requiredConfirmarion,
-      owners: ownerAddrs,
-    });
-    closeCreateWalletForm();
-    // use app context update wallet list
-    alert("Success" + test.toString());
+    // if (walletP) {
+    //   return;
+    // }
+    // const { error, data } = await walletCall({
+    //   name: name,
+    //   numConfirmationsRequired: requiredConfirmarion,
+    //   owners: ownerAddrs,
+    // });
+
+    // if (error) {
+    //   alert(`Error: ${error.message}`);
+    // } else {
+    //   debugger;
+    //   closeCreateWalletForm();
+    //   // use app context update wallet list
+    //   alert("Success");
+    // }
+    // nvdien: gọi qua useAsync ko lấy được data nên thử qua cách gọi API trực tiếp
+    if (web3) {
+      const wallet = await createWallet(web3, account, {
+        name: name,
+        numConfirmationsRequired: requiredConfirmarion,
+        owners: ownerAddrs,
+      });
+      debugger;
+      // biến wallet chính là ví lấy đc đó
+      // TODO, cần add vào danh sách các ví
+    } else {
+      alert("no web3");
+    }
   }
 
   return (
@@ -179,8 +202,8 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
                       <td>
                         <Button
                           color="red"
-                          disabled={pending}
-                          loading={pending}
+                          disabled={walletP}
+                          loading={walletP}
                           onClick={() => removeOwner(index)}
                         >
                           Remove
@@ -197,16 +220,16 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
         <div className="form-footer">
           <Button
             color="blue"
-            disabled={pending}
-            loading={pending}
+            disabled={walletP}
+            loading={walletP}
             onClick={createWalletHandler}
           >
-            Deposit
+            Create
           </Button>
           <Button
             color="red"
-            disabled={pending}
-            loading={pending}
+            disabled={walletP}
+            loading={walletP}
             onClick={closeCreateWalletForm}
           >
             Cancel

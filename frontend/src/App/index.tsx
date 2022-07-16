@@ -28,6 +28,7 @@ function App() {
   } = useAppContext();
 
   const { state, set } = useMultiSigWalletContext();
+  const [chosenWallet, setChosenWallet] = useState("");
   const [walletOpen, setWalletOpen] = useState(false);
   const [showMainDisplay, setShowMainDisplay] = useState(true);
   const [depositFormOpen, setDispositFormOpen] = useState(false);
@@ -73,7 +74,11 @@ function App() {
     setShowMainDisplay(false);
   }
 
-  function depositWallet() {
+  function depositWallet(
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    walletAddr: string
+  ) {
+    setChosenWallet(walletAddr);
     setDispositFormOpen(true);
   }
   function updateWalletList(params: string) {
@@ -121,19 +126,19 @@ function App() {
                             <div className="number-required">
                               {wallet.required_confirmation}
                             </div>
-                            <Button
+                            {/* <Button
                               color="grey"
                               onClick={depositWallet}
                               size="tiny"
                             >
                               Edit
-                            </Button>
+                            </Button> */}
                           </div>
                         </td>
                         <td>
                           <Button
                             color="blue"
-                            onClick={depositWallet}
+                            onClick={(e) => depositWallet(e, wallet.address)}
                             size="tiny"
                           >
                             Deposit
@@ -164,7 +169,7 @@ function App() {
         // Change address here
         <DepositForm
           closeDepositForm={() => setDispositFormOpen(false)}
-          wallet="0x5deE543014058D3d4CdA46454dEe1662DDD13198"
+          wallet={chosenWallet}
         />
       ) : null}
       {withdrawFormOpen ? (

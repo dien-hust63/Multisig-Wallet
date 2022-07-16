@@ -2,6 +2,7 @@ import Web3 from "web3";
 import BN from "bn.js";
 import TruffleContract from "@truffle/contract";
 import walletTruffle from "../build/contracts/Wallet.json";
+import {} from "../api/wallet"
 
 // @ts-ignore
 const Wallet = TruffleContract(walletTruffle);
@@ -39,7 +40,8 @@ export async function get(
 
   const balance = await web3.eth.getBalance(multiSig.address);
   const owners = await multiSig.getOwners();
-  const name = await multiSig.getName();
+  // nvdien: tạm thời contract chưa có hàm getName => Tạo bổ sung vào
+  // const name = await multiSig.getName();
   const tokens = await multiSig.getTokens();
   const numConfirmationsRequired = await multiSig.numConfirmationsRequired();
   const transactionCount = await multiSig.getTransactionCount();
@@ -69,7 +71,7 @@ export async function get(
   }
 
   return {
-    name,
+    name: "",
     address: multiSig.address,
     balance,
     owners,
@@ -103,14 +105,15 @@ export async function createWallet(
     numConfirmationsRequired: number;
     owners: string[];
   }
-) {
+){
   const { name, numConfirmationsRequired, owners } = params;
   Wallet.setProvider(web3.currentProvider);
   const wallet = await Wallet.new(name, numConfirmationsRequired, owners, {
     from: account,
   });
-  //define interface { name, add}
-  return wallet;
+  const walletDetail = await get(web3,account, wallet.address);
+  debugger;
+  return walletDetail;
 }
 
 export async function importWallet(

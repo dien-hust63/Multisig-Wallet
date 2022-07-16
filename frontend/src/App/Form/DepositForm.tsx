@@ -76,13 +76,13 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
     const zero = Web3.utils.toBN(0);
 
     if (value.gt(zero)) {
-      const { error } = await call({
+      const { error, data } = await call({
         web3,
         account,
         value,
         wallet: walletAddr,
       });
-
+      debugger;
       if (error) {
         alert(`Error: ${error.message}`);
       } else {
