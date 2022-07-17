@@ -17,6 +17,15 @@ interface Transaction {
   isConfirmedByCurrentAccount: boolean;
   token: string;
 }
+
+interface Trans {
+  destination: string;
+  value: any;
+  numConfirmations: number;
+  executed: boolean;
+  token: string;
+  data: any;
+}
 interface Token {
   name: string;
   balance: number;
@@ -57,7 +66,7 @@ export async function get(
     wallet,
     tokens,
   });
-
+  debugger;
   // get 10 most recent tx
   const count = transactionCount.toNumber();
   const transactions: Transaction[] = [];
@@ -67,19 +76,20 @@ export async function get(
       break;
     }
 
-    const tx = await multiSig.getTransaction(txIndex);
+    const tx: Trans = await multiSig.getTransaction(txIndex);
+    debugger;
     const isConfirmed = await multiSig.isConfirmed(txIndex, account);
 
-    transactions.push({
-      txIndex,
-      destination: tx.destination,
-      value: tx.value,
-      data: tx.data,
-      token: tx.token,
-      executed: tx.executed,
-      numConfirmations: tx.numConfirmations,
-      isConfirmedByCurrentAccount: isConfirmed,
-    });
+    // transactions.push({
+    //   txIndex,
+    //   destination: tx.destination,
+    //   value: tx.value.toNumber(),
+    //   data: tx.data.toString(),
+    //   token: tx.token.toNumber(),
+    //   executed: tx.executed,
+    //   numConfirmations: tx.numConfirmations,
+    //   isConfirmedByCurrentAccount: isConfirmed,
+    // });
   }
 
   return {
@@ -154,8 +164,8 @@ export async function addUserToWallet(
   const wallet = await Wallet.at(params.wallet);
   //TODO: cần check lại
   await wallet.addOwner(params.address, {
-    from: account
-  })
+    from: account,
+  });
   const owners = wallet.getOwners();
   return owners;
 }

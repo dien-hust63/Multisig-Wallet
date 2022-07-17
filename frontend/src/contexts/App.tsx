@@ -22,12 +22,12 @@ interface Wallet {
 
 const INIT_STATE: State = {
   wallets: [
-    // {
-    //   name: "DKT",
-    //   address: "0xc2eec85f0f3463231017748c52547f1c14e923ad",
-    //   balance: 100,
-    //   numConfirmationsRequired: 2,
-    // },
+    {
+      name: "DKT",
+      address: "0xc2eec85f0f3463231017748c52547f1c14e923ad",
+      balance: 100,
+      numConfirmationsRequired: 2,
+    },
   ],
 };
 
