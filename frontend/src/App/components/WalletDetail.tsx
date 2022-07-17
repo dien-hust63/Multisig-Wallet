@@ -5,7 +5,6 @@ import { useWeb3Context } from "../../contexts/Web3";
 import "../../css/components/walletdetail.css";
 import useAsync from "../../components/useAsync";
 import { confirmTransaction } from "../../api/wallet";
-import CreateTokenForm from "../Form/CreateToken";
 import AddUserForm from "../Form/AddUser";
 
 interface Props {
@@ -20,7 +19,6 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
   const [showRegionOwner, setShowRegionOwners] = useState(true);
   const [showRegionToken, setShowRegionToken] = useState(true);
   const [showRegionTrans, setShowRegionTrans] = useState(true);
-  const [tokenOpen, setTokenOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   interface ConfirmTransParams {
     txIndex: number;
@@ -102,7 +100,7 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
               <h4 className="title">Tokens</h4>
             </div>
             <div className="section-right">
-              <Button inverted color="blue" onClick={() => setTokenOpen(true)}>
+              <Button inverted color="blue">
                 Add
               </Button>
               <Button
@@ -220,12 +218,6 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
           ) : null}
         </div>
       </div>
-      {tokenOpen ? (
-        <CreateTokenForm
-          closeTokenForm={() => setTokenOpen(false)}
-          wallet={wallet}
-        />
-      ) : null}
       {userOpen ? (
         <AddUserForm
           closeAddUserForm={() => setUserOpen(false)}
