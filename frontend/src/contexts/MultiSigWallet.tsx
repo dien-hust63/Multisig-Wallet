@@ -47,6 +47,7 @@ const SET = "SET";
 const UPDATE_BALANCE = "UPDATE_BALANCE";
 const ADD_TX = "ADD_TX";
 const UPDATE_TX = "UPDATE_TX";
+const ADD_OWNER = "ADD_OWNER";
 
 interface Set {
   type: "SET";
@@ -64,6 +65,13 @@ interface UpdateBalance {
   type: "UPDATE_BALANCE";
   data: {
     balance: string;
+  };
+}
+
+interface AddOwner {
+  type: "ADD_OWNER";
+  data: {
+    address: string;
   };
 }
 
@@ -89,7 +97,7 @@ interface UpdateTx {
   };
 }
 
-type Action = Set | UpdateBalance | AddTx | UpdateTx;
+type Action = Set | UpdateBalance | AddTx | UpdateTx | AddOwner;
 
 function reducer(state: State = INITIAL_STATE, action: Action) {
   switch (action.type) {
@@ -97,6 +105,12 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
       return {
         ...state,
         ...action.data,
+      };
+    }
+    case ADD_OWNER: {
+      return {
+        ...state,
+        owners: [...state.owners, action.data.address],
       };
     }
     case UPDATE_BALANCE: {
@@ -190,6 +204,10 @@ interface UpdateBalanceInputs {
   balance: string;
 }
 
+interface AddOwnerInputs {
+  address: string;
+}
+
 interface AddTxInputs {
   txIndex: string;
   destination: string;
@@ -212,6 +230,7 @@ const MultiSigWalletContext = createContext({
   updateBalance: (_data: UpdateBalanceInputs) => {},
   addTx: (_data: AddTxInputs) => {},
   updateTx: (_data: UpdateTxInputs) => {},
+  addOwner: (_data: AddOwnerInputs) => {},
 });
 
 export function useMultiSigWalletContext() {
@@ -233,6 +252,12 @@ export const Provider: React.FC<ProviderProps> = ({ children }) => {
   function updateBalance(data: UpdateBalanceInputs) {
     dispatch({
       type: UPDATE_BALANCE,
+      data,
+    });
+  }
+  function addOwner(data: AddOwnerInputs) {
+    dispatch({
+      type: ADD_OWNER,
       data,
     });
   }
@@ -260,6 +285,7 @@ export const Provider: React.FC<ProviderProps> = ({ children }) => {
           updateBalance,
           addTx,
           updateTx,
+          addOwner,
         }),
         [state]
       )}
