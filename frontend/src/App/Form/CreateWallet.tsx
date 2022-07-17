@@ -142,7 +142,7 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
       addWallet({
         name: wallet.name,
         address: wallet.address,
-        balance: parseInt(wallet.balance),
+        balance: Number(wallet.balance),
         numConfirmationsRequired: wallet.numConfirmationsRequired,
       });
       closeCreateWalletForm();

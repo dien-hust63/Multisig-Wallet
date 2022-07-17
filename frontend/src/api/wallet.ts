@@ -129,6 +129,25 @@ export async function importWallet(
   return wallet;
 }
 
+export async function addUserToWallet(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+    wallet: string;
+  }
+) {
+  Wallet.setProvider(web3.currentProvider);
+  debugger;
+  const wallet = await Wallet.at(params.wallet);
+  //TODO: cần check lại
+  await wallet.addOwner(params.address, {
+    from: account
+  })
+  const owners = wallet.getOwners();
+  return owners;
+}
+
 export async function getWalletAtAddress(
   web3: Web3,
   account: string,

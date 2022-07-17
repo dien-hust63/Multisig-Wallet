@@ -32,7 +32,7 @@ const ImportWalletForm: React.FC<Props> = ({ closeImportWallet, wallet }) => {
       addWallet({
         name: wallet.name,
         address: wallet.address,
-        balance: parseInt(wallet.balance),
+        balance: Number(wallet.balance),
         numConfirmationsRequired: wallet.numConfirmationsRequired,
       });
       setPendingImport(false);

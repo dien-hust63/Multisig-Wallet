@@ -64,6 +64,7 @@ function App() {
   });
 
   async function openWalletDetail(wallet: string) {
+    setChosenWallet(wallet);
     const { error, data } = await getWalletCall(wallet);
     if (error) {
       console.error(error);
@@ -176,7 +177,7 @@ function App() {
               </table>
             </div>
           ) : (
-            <WalletDetail />
+            <WalletDetail wallet={chosenWallet} />
           )}
         </div>
       </div>
