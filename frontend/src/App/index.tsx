@@ -15,8 +15,14 @@ import { useMultiSigWalletContext } from "../contexts/MultiSigWallet";
 import { updateCommaList } from "typescript";
 import { useAppContext } from "../contexts/App";
 import { get } from "../api/wallet";
+import { getTokenListInfo } from "../api/token";
 import ImportWalletForm from "./Form/ImportWallet";
 import Swal from "sweetalert2";
+
+interface TokenListInputs {
+  wallet: string;
+  tokens: string[];
+}
 
 function App() {
   const {
@@ -29,7 +35,7 @@ function App() {
     addWallet,
   } = useAppContext();
 
-  const { state, set } = useMultiSigWalletContext();
+  const { state, set, updateTokenDetailList } = useMultiSigWalletContext();
   const [chosenWallet, setChosenWallet] = useState("");
   const [walletOpen, setWalletOpen] = useState(false);
   const [importWallet, setImportWallet] = useState(false);
@@ -64,6 +70,17 @@ function App() {
     return await get(web3, account, params);
   });
 
+  const {
+    pending: tokenPending,
+    error: tokenErr,
+    call: getTokenList,
+  } = useAsync<TokenListInputs, any>(async (params) => {
+    if (!web3) {
+      throw new Error("No web3");
+    }
+    return await getTokenListInfo(web3, account, params);
+  });
+
   async function openWalletDetail(wallet: string) {
     setChosenWallet(wallet);
     const { error, data } = await getWalletCall(wallet);
@@ -71,7 +88,6 @@ function App() {
       console.error(error);
       return;
     }
-    console.log(data);
     if (data) {
       set(data);
     }
@@ -95,11 +111,7 @@ function App() {
   }
 
   function updateWalletList(params: string) {
-    Swal.fire(
-      'Update wallet list',
-      '',
-      'success'
-    )
+    Swal.fire("Update wallet list", "", "success");
   }
   return (
     <div className="App">

@@ -98,6 +98,7 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
       if (error) {
         Swal.fire(`Error: ${error.message}`, "", "error");
       } else {
+        closeWithDrawForm();
         setWithDrawValue(0);
       }
     }
