@@ -16,13 +16,13 @@ import { updateCommaList } from "typescript";
 import { useAppContext } from "../contexts/App";
 import { get } from "../api/wallet";
 import { getTokenListInfo } from "../api/token";
+import ImportWalletForm from "./Form/ImportWallet";
+import Swal from "sweetalert2";
 
 interface TokenListInputs {
   wallet: string;
   tokens: string[];
 }
-import ImportWalletForm from "./Form/ImportWallet";
-import Swal from "sweetalert2";
 
 function App() {
   const {
