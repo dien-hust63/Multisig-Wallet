@@ -66,28 +66,47 @@ export async function get(
     wallet,
     tokens,
   });
-  debugger;
   // get 10 most recent tx
   const count = transactionCount.toNumber();
-  const transactions: Transaction[] = [];
+  const transactions: Transaction[] = [
+    {
+      txIndex: 2,
+      destination: "ADGAGSGSGGSGSA",
+      value: new BN(22),
+      data: "string",
+      executed: false,
+      numConfirmations: 0,
+      isConfirmedByCurrentAccount: false,
+      token: "agsashja",
+    },
+    {
+      txIndex: 3,
+      destination: "AGHS",
+      value: new BN(21),
+      data: "string",
+      executed: true,
+      numConfirmations: 0,
+      isConfirmedByCurrentAccount: false,
+      token: "agsashja",
+    },
+  ];
   for (let i = 1; i <= 10; i++) {
     const txIndex = count - i;
     if (txIndex < 0) {
       break;
     }
 
-    const tx: Trans = await multiSig.getTransaction(txIndex);
-    debugger;
+    const tx = await multiSig.getTransaction(txIndex);
     const isConfirmed = await multiSig.isConfirmed(txIndex, account);
 
     // transactions.push({
     //   txIndex,
-    //   destination: tx.destination,
-    //   value: tx.value.toNumber(),
-    //   data: tx.data.toString(),
-    //   token: tx.token.toNumber(),
-    //   executed: tx.executed,
-    //   numConfirmations: tx.numConfirmations,
+    //   destination: "",
+    //   value: new BN(10),
+    //   data: "aa",
+    //   token: "aas",
+    //   executed: false,
+    //   numConfirmations: 1,
     //   isConfirmedByCurrentAccount: isConfirmed,
     // });
   }

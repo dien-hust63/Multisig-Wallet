@@ -65,18 +65,14 @@ export async function getTokenListInfo(
   const { wallet, tokens } = params;
   const tokenList: TokenInformation[] = [];
 
-  for (let i = 0; i < tokens.length; i++) {
+  for (let i = tokens.length - 4; i < tokens.length; i++) {
     const t = await getTokenInfo(web3, tokens[i], wallet);
     tokenList.push(t);
   }
   return tokenList;
 }
 
-export async function createToken(
-  web3: Web3,
-  account: string,
-  params: Token
-) {
+export async function createToken(web3: Web3, account: string, params: Token) {
   const { name, symbol, decimals, totalSupply } = params;
 
   Token.setProvider(web3.currentProvider);

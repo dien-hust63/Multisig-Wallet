@@ -4,13 +4,27 @@ import { useMultiSigWalletContext } from "../../contexts/MultiSigWallet";
 import { useWeb3Context } from "../../contexts/Web3";
 import "../../css/components/walletdetail.css";
 import useAsync from "../../components/useAsync";
-import { confirmTransaction } from "../../api/wallet";
+import { confirmTransaction, executeTransaction } from "../../api/wallet";
 import CreateTokenForm from "../Form/CreateToken";
+import DepositTokenForm from "../Form/DepositToken";
+import WithdrawTokenForm from "../Form/WithDrawToken";
+import Swal from "sweetalert2";
 
 import AddUserForm from "../Form/AddUser";
+import { stringify } from "querystring";
 
 interface Props {
   wallet: string;
+}
+
+interface ConfirmTransParams {
+  wallet: string;
+  txIndex: number;
+}
+
+interface ExecuteTransParams {
+  wallet: string;
+  txIndex: number;
 }
 const WalletDetail: React.FC<Props> = ({ wallet }) => {
   const {
@@ -26,10 +40,10 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
   const [showRegionToken, setShowRegionToken] = useState(true);
   const [showRegionTrans, setShowRegionTrans] = useState(true);
   const [createTokenFormOpen, setCreateTokenForm] = useState(false);
+  const [depositTokenFormOpen, setDepositTokenForm] = useState(false);
+  const [withdrawTokenFormOpen, setWithdrawTokenForm] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  interface ConfirmTransParams {
-    txIndex: number;
-  }
+  const [tokenSelect, setTokenSelect] = useState("");
 
   // const {
   //   pending: walletP,
@@ -42,11 +56,75 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
   //   await confirmTransaction(web3, account, params);
   // });
 
+  const { pending: confirmPending, call: confirmCall } = useAsync<
+    ConfirmTransParams,
+    void
+  >(async (params) => {
+    if (!web3) {
+      throw new Error("No web3");
+    }
+    return await confirmTransaction(web3, account, params);
+  });
+
+  const { pending: executePending, call: executeCall } = useAsync<
+    ExecuteTransParams,
+    void
+  >(async (params) => {
+    if (!web3) {
+      throw new Error("No web3");
+    }
+    return await executeTransaction(web3, account, params);
+  });
+
   async function confirmTransaction1(txIndex: number) {
-    const test = await confirmTransaction(web3, account, {
-      txIndex: txIndex,
-      wallet: state.address,
+    if (confirmPending) {
+      return;
+    }
+
+    if (!web3) {
+      Swal.fire("Error: No web3", "", "error");
+      return;
+    }
+    const { error, data } = await confirmCall({
+      txIndex,
+      wallet: address,
     });
+    if (error) {
+      Swal.fire(`Error: ${error.message}`, "", "error");
+    } else {
+      Swal.fire(`Confirm successfully`, "", "success");
+    }
+  }
+
+  async function executeTransaction1(txIndex: number) {
+    if (executePending) {
+      return;
+    }
+
+    if (!web3) {
+      alert("No web3");
+      Swal.fire("Error: No web3", "", "error");
+      return;
+    }
+    const { error, data } = await executeCall({
+      txIndex,
+      wallet: address,
+    });
+    if (error) {
+      Swal.fire(`Error: ${error.message}`, "", "error");
+    } else {
+      Swal.fire(`Execute successfully`, "", "success");
+    }
+  }
+
+  function depositTokenWallet(token: string) {
+    setTokenSelect(token);
+    setDepositTokenForm(true);
+  }
+
+  function withdrawTokenWallet(token: string) {
+    setTokenSelect(token);
+    setWithdrawTokenForm(true);
   }
 
   return (
@@ -134,6 +212,7 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
                     <th>Balance</th>
                     <th>Symbol</th>
                     <th>Decimals</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -146,6 +225,22 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
                           <td>{token.balance}</td>
                           <td>{token.symbol}</td>
                           <td>{token.decimals}</td>
+                          <td>
+                            <Button
+                              color="blue"
+                              onClick={() => depositTokenWallet(token.address)}
+                              size="tiny"
+                            >
+                              Deposit
+                            </Button>
+                            <Button
+                              color="grey"
+                              onClick={() => withdrawTokenWallet(token.address)}
+                              size="tiny"
+                            >
+                              Withdraw
+                            </Button>
+                          </td>
                         </tr>
                       );
                     })
@@ -164,6 +259,20 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
             <CreateTokenForm
               closeCreateTokenForm={() => setCreateTokenForm(false)}
               wallet={address}
+            />
+          ) : null}
+          {depositTokenFormOpen ? (
+            <DepositTokenForm
+              closeDepositTokenForm={() => setDepositTokenForm(false)}
+              wallet={address}
+              token={tokenSelect}
+            />
+          ) : null}
+          {withdrawTokenFormOpen ? (
+            <WithdrawTokenForm
+              closeWithDrawTokenForm={() => setWithdrawTokenForm(false)}
+              wallet={address}
+              token={tokenSelect}
             />
           ) : null}
         </div>
@@ -202,28 +311,44 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
                 <tbody>
                   {state.transactions.length ? (
                     state.transactions.map((transaction, i) => (
-                      <tr>
+                      <tr key={transaction.txIndex}>
                         <td>{i + 1}</td>
                         <td>{transaction.destination}</td>
-                        <td>{transaction.value} ETH</td>
+                        <td>{transaction.value.toNumber()} ETH</td>
                         <td>{transaction.data}</td>
                         <td>
                           <div className="confirm-cell">
                             <div>{transaction.numConfirmations}</div>
                             <div>
-                              <Button
-                                color="blue"
-                                onClick={() =>
-                                  confirmTransaction1(transaction.txIndex)
-                                }
-                                size="tiny"
-                              >
-                                Confirm
-                              </Button>
+                              {!transaction.isConfirmedByCurrentAccount &&
+                              !transaction.executed ? (
+                                <Button
+                                  color="blue"
+                                  onClick={() =>
+                                    confirmTransaction1(transaction.txIndex)
+                                  }
+                                  size="tiny"
+                                >
+                                  Confirm
+                                </Button>
+                              ) : null}
+                              {transaction.numConfirmations >=
+                                state.numConfirmationsRequired &&
+                              !transaction.executed ? (
+                                <Button
+                                  color="blue"
+                                  onClick={() =>
+                                    executeTransaction1(transaction.txIndex)
+                                  }
+                                  size="tiny"
+                                >
+                                  Execute
+                                </Button>
+                              ) : null}
                             </div>
                           </div>
                         </td>
-                        <td>{transaction.executed}</td>
+                        <td>{transaction.executed ? "Executed" : "Pending"}</td>
                       </tr>
                     ))
                   ) : (

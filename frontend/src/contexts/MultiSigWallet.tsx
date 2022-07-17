@@ -93,7 +93,7 @@ interface AddOwner {
   type: "ADD_OWNER";
   data: {
     address: string;
-  }
+  };
 }
 interface UpdateTokenDetail {
   type: "UPDATE_TOKEN_DETAIL";
