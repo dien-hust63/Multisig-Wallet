@@ -8,6 +8,7 @@ import useAsync from "../../components/useAsync";
 import "../../css/form/depositform.css";
 import { useAppContext } from "../../contexts/App";
 import Swal from "sweetalert2";
+import { useMultiSigWalletContext } from "../../contexts/MultiSigWallet";
 
 interface Props {
   closeAddUserForm: () => void;
@@ -27,7 +28,7 @@ const AddUserForm: React.FC<Props> = ({ closeAddUserForm, wallet }) => {
   } = useWeb3Context();
 
   const { updateBalanceWallet } = useAppContext();
-
+  const { addOwner } = useMultiSigWalletContext();
   const [address, setAddress] = useState("");
   const { pending, call } = useAsync<AddUserParams, void>(
     ({ web3, account, address, wallet }) =>
@@ -56,6 +57,7 @@ const AddUserForm: React.FC<Props> = ({ closeAddUserForm, wallet }) => {
     if (error) {
       Swal.fire(`Error: ${error.message}`, "", "error");
     } else {
+      addOwner({ address });
       closeAddUserForm();
       Swal.fire("Add owner successfully", "", "success");
     }
