@@ -7,6 +7,7 @@ import { deposit, get } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
 import "../../css/form/importwallet.css";
 import { useAppContext } from "../../contexts/App";
+import Swal from "sweetalert2";
 
 interface Props {
   closeImportWallet: () => void;
@@ -37,9 +38,9 @@ const ImportWalletForm: React.FC<Props> = ({ closeImportWallet, wallet }) => {
       });
       setPendingImport(false);
       closeImportWallet();
-      alert("import successfully");
+      Swal.fire("Import wallet successfully", "", "success");
     } else {
-      alert("no web3");
+      Swal.fire("No web3", "", "warning");
     }
   }
 

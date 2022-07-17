@@ -7,6 +7,7 @@ import { deposit } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
 import "../../css/form/createtoken.css";
 import { createToken } from "../../api/token";
+import Swal from "sweetalert2";
 
 interface Props {
   closeTokenForm: () => void;
@@ -52,7 +53,7 @@ const CreateTokenForm: React.FC<Props> = ({ closeTokenForm, wallet }) => {
     }
 
     if (!web3) {
-      alert("No web3");
+      Swal.fire("No web3", "", "warning");
       return;
     }
     const value = Web3.utils.toBN(depositValue);
@@ -66,11 +67,11 @@ const CreateTokenForm: React.FC<Props> = ({ closeTokenForm, wallet }) => {
       });
       debugger;
       if (error) {
-        alert(`Error: ${error.message}`);
+        Swal.fire(`Error: ${error.message}`, "", "error");
       } else {
         setDepositValue(0);
         closeTokenForm();
-        alert("deposit successfully");
+        Swal.fire("Deposit successfully", "", "success");
       }
     }
   }

@@ -16,6 +16,7 @@ import { updateCommaList } from "typescript";
 import { useAppContext } from "../contexts/App";
 import { get } from "../api/wallet";
 import ImportWalletForm from "./Form/ImportWallet";
+import Swal from "sweetalert2";
 
 function App() {
   const {
@@ -94,7 +95,11 @@ function App() {
   }
 
   function updateWalletList(params: string) {
-    alert("update wallet list");
+    Swal.fire(
+      'Update wallet list',
+      '',
+      'success'
+    )
   }
   return (
     <div className="App">

@@ -7,6 +7,7 @@ import { deposit } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
 import "../../css/form/depositform.css";
 import { useAppContext } from "../../contexts/App";
+import Swal from "sweetalert2";
 
 interface Props {
   closeDepositForm: () => void;
@@ -43,7 +44,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
     }
 
     if (!web3) {
-      alert("No web3");
+      Swal.fire("No web3", "", "warning");
       return;
     }
 
@@ -59,7 +60,8 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
       });
 
       if (error) {
-        alert(`Error: ${error.message}`);
+        
+        Swal.fire(`Error: ${error.message}`, "", "error");
       } else {
         setDepositValue(0);
       }
@@ -72,7 +74,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
     }
 
     if (!web3) {
-      alert("No web3");
+      Swal.fire("No web3", "", "warning");
       return;
     }
     const value = Web3.utils.toBN(depositValue);
@@ -87,7 +89,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
       });
       debugger;
       if (error) {
-        alert(`Error: ${error.message}`);
+        Swal.fire(`Error: ${error.message}`, "", "error");
       } else {
         setDepositValue(0);
         let valueEther = web3.utils.fromWei(depositValue.toString(), "ether");
@@ -96,7 +98,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
           balance: Number(Number(valueEther).toFixed(4)),
         });
         closeDepositForm();
-        alert("deposit successfully");
+        Swal.fire(`Deposit successfully`, "", "success");
       }
     }
   }

@@ -7,6 +7,7 @@ import { addUserToWallet, deposit } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
 import "../../css/form/depositform.css";
 import { useAppContext } from "../../contexts/App";
+import Swal from "sweetalert2";
 
 interface Props {
   closeAddUserForm: () => void;
@@ -43,7 +44,7 @@ const AddUserForm: React.FC<Props> = ({ closeAddUserForm, wallet }) => {
     }
 
     if (!web3) {
-      alert("No web3");
+      Swal.fire("No web3", "", "warning");
       return;
     }
     const { error, data } = await call({
@@ -53,10 +54,10 @@ const AddUserForm: React.FC<Props> = ({ closeAddUserForm, wallet }) => {
       wallet,
     });
     if (error) {
-      alert(`Error: ${error.message}`);
+      Swal.fire(`Error: ${error.message}`, "", "error");
     } else {
       closeAddUserForm();
-      alert("add owner successfully");
+      Swal.fire("Add owner successfully", "", "success");
     }
   }
 

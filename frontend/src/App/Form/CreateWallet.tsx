@@ -8,6 +8,7 @@ import useAsync from "../../components/useAsync";
 import { deposit } from "../../api/wallet";
 import "../../css/form/createwallet.css";
 import { createWallet } from "../../api/wallet";
+import Swal from "sweetalert2";
 interface Props {
   closeCreateWalletForm: () => void;
 }
@@ -146,9 +147,9 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
         numConfirmationsRequired: wallet.numConfirmationsRequired,
       });
       closeCreateWalletForm();
-      alert("create wallet successfully");
+      Swal.fire("Create wallet successfully", "", "warning");
     } else {
-      alert("no web3");
+      Swal.fire("No web3", "", "warning");
     }
   }
 
