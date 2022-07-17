@@ -7,7 +7,12 @@ import useAsync from "../../components/useAsync";
 import { confirmTransaction } from "../../api/wallet";
 import CreateTokenForm from "../Form/CreateToken";
 
-function WalletDetail() {
+import AddUserForm from "../Form/AddUser";
+
+interface Props {
+  wallet: string;
+}
+const WalletDetail: React.FC<Props> = ({ wallet }) => {
   const {
     state: { web3, account, balance, netId },
     updateAccount,
@@ -21,6 +26,7 @@ function WalletDetail() {
   const [showRegionToken, setShowRegionToken] = useState(true);
   const [showRegionTrans, setShowRegionTrans] = useState(true);
   const [createTokenFormOpen, setCreateTokenForm] = useState(false);
+  const [userOpen, setUserOpen] = useState(false);
   interface ConfirmTransParams {
     txIndex: number;
   }
@@ -42,6 +48,7 @@ function WalletDetail() {
       wallet: state.address,
     });
   }
+
   return (
     <div className="wallet-detail">
       <div className="wallet-detail-header">
@@ -59,7 +66,7 @@ function WalletDetail() {
               <h4 className="title">Owners</h4>
             </div>
             <div className="section-right">
-              <Button inverted color="blue">
+              <Button inverted color="blue" onClick={() => setUserOpen(true)}>
                 Add
               </Button>
               <Button
@@ -232,8 +239,14 @@ function WalletDetail() {
           ) : null}
         </div>
       </div>
+      {userOpen ? (
+        <AddUserForm
+          closeAddUserForm={() => setUserOpen(false)}
+          wallet={wallet}
+        />
+      ) : null}
     </div>
   );
-}
+};
 
 export default WalletDetail;

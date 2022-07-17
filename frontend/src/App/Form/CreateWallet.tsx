@@ -8,6 +8,7 @@ import useAsync from "../../components/useAsync";
 import { deposit } from "../../api/wallet";
 import "../../css/form/createwallet.css";
 import { createWallet } from "../../api/wallet";
+import Swal from "sweetalert2";
 interface Props {
   closeCreateWalletForm: () => void;
 }
@@ -48,6 +49,7 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
 
   const [name, setName] = useState("");
   const [requiredConfirmarion, setRequiredConfirmation] = useState(0);
+  const [pendingCreateWallet, setPendingCreateWallet] = useState(false);
   const [owners, setOwners] = useState<Owners[]>([
     {
       name: "My Account",
@@ -131,20 +133,23 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
     // }
     // nvdien: gọi qua useAsync ko lấy được data nên thử qua cách gọi API trực tiếp
     if (web3) {
+      setPendingCreateWallet(true);
       const wallet = await createWallet(web3, account, {
         name: name,
         numConfirmationsRequired: requiredConfirmarion,
         owners: ownerAddrs,
       });
+      setPendingCreateWallet(false);
       addWallet({
         name: wallet.name,
         address: wallet.address,
-        balance: parseInt(wallet.balance),
+        balance: Number(wallet.balance),
         numConfirmationsRequired: wallet.numConfirmationsRequired,
       });
       closeCreateWalletForm();
+      Swal.fire("Create wallet successfully", "", "warning");
     } else {
-      alert("no web3");
+      Swal.fire("No web3", "", "warning");
     }
   }
 
@@ -211,8 +216,8 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
                       <td>
                         <Button
                           color="red"
-                          disabled={walletP}
-                          loading={walletP}
+                          disabled={pendingCreateWallet}
+                          loading={pendingCreateWallet}
                           onClick={() => removeOwner(index)}
                         >
                           Remove
@@ -229,16 +234,16 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
         <div className="form-footer">
           <Button
             color="blue"
-            disabled={walletP}
-            loading={walletP}
+            disabled={pendingCreateWallet}
+            loading={pendingCreateWallet}
             onClick={createWalletHandler}
           >
             Create
           </Button>
           <Button
             color="red"
-            disabled={walletP}
-            loading={walletP}
+            disabled={pendingCreateWallet}
+            loading={pendingCreateWallet}
             onClick={closeCreateWalletForm}
           >
             Cancel

@@ -21,6 +21,8 @@ interface TokenListInputs {
   wallet: string;
   tokens: string[];
 }
+import ImportWalletForm from "./Form/ImportWallet";
+import Swal from "sweetalert2";
 
 function App() {
   const {
@@ -36,6 +38,7 @@ function App() {
   const { state, set, updateTokenDetailList } = useMultiSigWalletContext();
   const [chosenWallet, setChosenWallet] = useState("");
   const [walletOpen, setWalletOpen] = useState(false);
+  const [importWallet, setImportWallet] = useState(false);
   const [showMainDisplay, setShowMainDisplay] = useState(true);
   const [depositFormOpen, setDepositFormOpen] = useState(false);
   const [withdrawFormOpen, setWithDrawFormOpen] = useState(false);
@@ -79,6 +82,7 @@ function App() {
   });
 
   async function openWalletDetail(wallet: string) {
+    setChosenWallet(wallet);
     const { error, data } = await getWalletCall(wallet);
     if (error) {
       console.error(error);
@@ -107,7 +111,7 @@ function App() {
   }
 
   function updateWalletList(params: string) {
-    alert("update wallet list");
+    Swal.fire("Update wallet list", "", "success");
   }
   return (
     <div className="App">
@@ -119,6 +123,13 @@ function App() {
               <div className="wallet-header">
                 <h2>Wallets</h2>
                 <div>
+                  <Button
+                    inverted
+                    color="blue"
+                    onClick={() => setImportWallet(true)}
+                  >
+                    Import
+                  </Button>
                   <Button inverted color="blue" onClick={openCreateWalletForm}>
                     Add
                   </Button>
@@ -145,7 +156,7 @@ function App() {
                           {wallet.name}
                         </td>
                         <td>{wallet.address}</td>
-                        <td>{wallet.balance}</td>
+                        <td>{wallet.balance} ETH</td>
                         <td>
                           <div className="required-confirm">
                             <div className="number-required">
@@ -183,7 +194,7 @@ function App() {
               </table>
             </div>
           ) : (
-            <WalletDetail />
+            <WalletDetail wallet={chosenWallet} />
           )}
         </div>
       </div>
@@ -199,6 +210,12 @@ function App() {
       {withdrawFormOpen ? (
         <WithdrawForm
           closeWithDrawForm={() => setWithDrawFormOpen(false)}
+          wallet={chosenWallet}
+        />
+      ) : null}
+      {importWallet ? (
+        <ImportWalletForm
+          closeImportWallet={() => setImportWallet(false)}
           wallet={chosenWallet}
         />
       ) : null}

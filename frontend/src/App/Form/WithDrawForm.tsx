@@ -6,6 +6,7 @@ import { useWeb3Context } from "../../contexts/Web3";
 import { submitTransaction } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
 import "../../css/form/withdrawform.css";
+import Swal from "sweetalert2";
 
 interface Props {
   closeWithDrawForm: () => void;
@@ -48,7 +49,7 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
     }
 
     if (!web3) {
-      alert("No web3");
+      Swal.fire("No web3", "", "warning");
       return;
     }
 
@@ -65,7 +66,7 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
       });
 
       if (error) {
-        alert(`Error: ${error.message}`);
+        Swal.fire(`Error: ${error.message}`, "", "error");
       } else {
         setWithDrawValue(0);
       }
@@ -78,7 +79,7 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
     }
 
     if (!web3) {
-      alert("No web3");
+      Swal.fire("No web3", "", "warning");
       return;
     }
 
@@ -95,7 +96,7 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
       });
 
       if (error) {
-        alert(`Error: ${error.message}`);
+        Swal.fire(`Error: ${error.message}`, "", "error");
       } else {
         closeWithDrawForm();
         setWithDrawValue(0);
@@ -108,11 +109,11 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
       <div className="withdraw-form">
         <div className="form-header">
           <h1>Withdraw</h1>
+          <h2>Wallet Address: {wallet}</h2>
         </div>
         <div className="form-body">
           <Form>
             <Form.Field>
-              <h2>Wallet Address: {wallet}</h2>
               <label>Amount(Wei)</label>
               <Form.Input
                 placeholder=""
