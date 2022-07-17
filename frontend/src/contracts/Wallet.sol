@@ -4,33 +4,32 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./W2TCoinERC20.sol";
 
 contract Wallet {
-    event Deposit(address indexed sender, uint amount, uint balance);
+    event Deposit(address indexed sender, uint256 amount, uint256 balance);
     event SubmitTransaction(
         address indexed owner,
-        uint indexed txIndex,
+        uint256 indexed txIndex,
         address indexed to,
-        uint value,
+        uint256 value,
         bytes data
     );
-    event ConfirmTransaction(address indexed owner, uint indexed txIndex);
-    event RevokeConfirmation(address indexed owner, uint indexed txIndex);
-    event ExecuteTransaction(address indexed owner, uint indexed txIndex);
+    event ConfirmTransaction(address indexed owner, uint256 indexed txIndex);
+    event RevokeConfirmation(address indexed owner, uint256 indexed txIndex);
+    event ExecuteTransaction(address indexed owner, uint256 indexed txIndex);
     event AddOwner(address indexed owner);
 
-
     string public name;
-    uint public numConfirmationsRequired;
+    uint256 public numConfirmationsRequired;
     address[] owners;
     address[] tokens;
     mapping(address => bool) isTokenControl;
     mapping(address => bool) isOwner;
-    mapping(uint => mapping(address => bool)) public isConfirmed;
+    mapping(uint256 => mapping(address => bool)) public isConfirmed;
 
     struct Transaction {
         address destination;
-        uint value;
+        uint256 value;
         bytes data;
-        uint numConfirmations;
+        uint256 numConfirmations;
         bool executed;
         address token;
     }
@@ -43,28 +42,35 @@ contract Wallet {
         _;
     }
 
-    modifier txExists(uint _txIndex) {
+    modifier txExists(uint256 _txIndex) {
         require(_txIndex < transactions.length, "tx does not exist");
         _;
     }
 
-    modifier notExecuted(uint _txIndex) {
+    modifier notExecuted(uint256 _txIndex) {
         require(!transactions[_txIndex].executed, "tx already executed");
         _;
     }
 
-    modifier notConfirmed(uint _txIndex) {
+    modifier notConfirmed(uint256 _txIndex) {
         require(!isConfirmed[_txIndex][msg.sender], "tx already confirmed");
         _;
     }
 
     // Contract constructor
-    constructor(string memory _name, uint _numConfirmationsRequired, address[] memory _owners) payable {
+    constructor(
+        string memory _name,
+        uint256 _numConfirmationsRequired,
+        address[] memory _owners
+    ) payable {
         require(_owners.length > 0, "Owners required");
-        require(_numConfirmationsRequired > 0 &&
-        _numConfirmationsRequired <= _owners.length, "Invalid number of required confirmations");
+        require(
+            _numConfirmationsRequired > 0 &&
+                _numConfirmationsRequired <= _owners.length,
+            "Invalid number of required confirmations"
+        );
 
-        for(uint i = 0; i < _owners.length; i++) {
+        for (uint256 i = 0; i < _owners.length; i++) {
             address owner = _owners[i];
             require(owner != address(0), "invalid owner");
             require(!isOwner[owner], "owner not unique");
@@ -74,11 +80,10 @@ contract Wallet {
 
         name = _name;
         numConfirmationsRequired = _numConfirmationsRequired;
-
     }
 
     receive() external payable {
-       emit Deposit(msg.sender, msg.value, address(this).balance);
+        emit Deposit(msg.sender, msg.value, address(this).balance);
     }
 
     function addOwner(address _owner) public onlyOwner {
@@ -87,46 +92,59 @@ contract Wallet {
         emit AddOwner(_owner);
     }
 
-    function withdraw(address payable _destination, uint _amount) external onlyOwner {
+    function withdraw(address payable _destination, uint256 _amount)
+        external
+        onlyOwner
+    {
         require(_amount < address(this).balance, "Ether not enough");
-        (bool success, ) = _destination.call{value: _amount}("withdraw eth to {_destination}");
+        (bool success, ) = _destination.call{value: _amount}(
+            "withdraw eth to {_destination}"
+        );
         require(success, "tx failed");
     }
+
     function submitTransaction(
         address _destination,
-        uint _value,
+        uint256 _value,
         bytes memory _data,
         address _token
     ) public onlyOwner {
-        uint txIndex = transactions.length;
+        uint256 txIndex = transactions.length;
         transactions.push(
             Transaction({
-            destination: _destination,
-            value: _value,
-            data: _data,
-            executed: false,
-            numConfirmations: 1,
-            token: _token
-        }));
+                destination: _destination,
+                value: _value,
+                data: _data,
+                executed: false,
+                numConfirmations: 1,
+                token: _token
+            })
+        );
 
-        emit SubmitTransaction(msg.sender, txIndex, _destination, _value, _data);
+        emit SubmitTransaction(
+            msg.sender,
+            txIndex,
+            _destination,
+            _value,
+            _data
+        );
     }
 
-    function confirmTransaction(uint _txIndex)
-     public
-     onlyOwner
-     txExists(_txIndex)
-     notExecuted(_txIndex)
-     notConfirmed(_txIndex)
-     {
+    function confirmTransaction(uint256 _txIndex)
+        public
+        onlyOwner
+        txExists(_txIndex)
+        notExecuted(_txIndex)
+        notConfirmed(_txIndex)
+    {
         Transaction storage transaction = transactions[_txIndex];
         transaction.numConfirmations += 1;
         isConfirmed[_txIndex][msg.sender] = true;
 
         emit ConfirmTransaction(msg.sender, _txIndex);
-     }
+    }
 
-    function executeTransaction(uint _txIndex)
+    function executeTransaction(uint256 _txIndex)
         public
         onlyOwner
         txExists(_txIndex)
@@ -140,18 +158,21 @@ contract Wallet {
         );
 
         transaction.executed = true;
-        if(transaction.token != address(0)) {
-            W2TCoinERC20(transaction.token).transfer(transaction.destination, transaction.value);
+        if (transaction.token != address(0)) {
+            W2TCoinERC20(transaction.token).transfer(
+                transaction.destination,
+                transaction.value
+            );
         } else {
-        (bool success, ) = transaction.destination.call{value: transaction.value}(
-            transaction.data
-        );
-        require(success, "tx failed");
+            (bool success, ) = transaction.destination.call{
+                value: transaction.value
+            }(transaction.data);
+            require(success, "tx failed");
         }
         emit ExecuteTransaction(msg.sender, _txIndex);
     }
 
-    function revokeConfirmation(uint _txIndex)
+    function revokeConfirmation(uint256 _txIndex)
         public
         onlyOwner
         txExists(_txIndex)
@@ -167,7 +188,7 @@ contract Wallet {
         emit RevokeConfirmation(msg.sender, _txIndex);
     }
 
-    function getBalance() external view returns (uint) {
+    function getBalance() external view returns (uint256) {
         return address(this).balance;
     }
 
@@ -183,14 +204,30 @@ contract Wallet {
         return tokens;
     }
 
-    function getTransactionCount() public view returns (uint) {
+    function getTransactionCount() public view returns (uint256) {
         return transactions.length;
     }
 
-    function getTransaction(uint _txId) public view returns (Transaction memory) {
-         Transaction storage transaction = transactions[_txId];
+    function getTransaction(uint256 _txIndex)
+        public
+        view
+        returns (
+            address to,
+            uint256 value,
+            bytes memory data,
+            bool executed,
+            uint256 numConfirmations
+        )
+    {
+        Transaction storage transaction = transactions[_txIndex];
 
-         return transaction;
+        return (
+            transaction.destination,
+            transaction.value,
+            transaction.data,
+            transaction.executed,
+            transaction.numConfirmations
+        );
     }
 
     // Token Controls
@@ -200,13 +237,23 @@ contract Wallet {
         isTokenControl[_address] = true;
         tokens.push(_address);
     }
-    function createToken(string memory _name,
-     string memory _symbol, uint8 _decimals, uint256 _total) public onlyOwner returns(address) {
-         W2TCoinERC20 coin = new W2TCoinERC20(_name, _symbol, _decimals, _total);
-         tokens.push(address(coin));
-         return address(coin);
+
+    function createToken(
+        string memory _name,
+        string memory _symbol,
+        uint8 _decimals,
+        uint256 _total
+    ) public onlyOwner returns (address) {
+        W2TCoinERC20 coin = new W2TCoinERC20(_name, _symbol, _decimals, _total);
+        tokens.push(address(coin));
+        return address(coin);
     }
-    function getBalanceOfToken(address _addressToken, address _addrWallet) public view returns(uint256) {
+
+    function getBalanceOfToken(address _addressToken, address _addrWallet)
+        public
+        view
+        returns (uint256)
+    {
         return W2TCoinERC20(_addressToken).balanceOf(_addrWallet);
     }
 }
