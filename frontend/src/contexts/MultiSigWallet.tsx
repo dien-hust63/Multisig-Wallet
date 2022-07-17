@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useWeb3Context } from "./Web3";
 import { get as getMultiSigWallet, subscribe } from "../api/wallet";
+import { getTokenListInfo } from "../api/token";
 
 interface State {
   name: string;
@@ -19,6 +20,15 @@ interface State {
   numConfirmationsRequired: number;
   transactionCount: number;
   transactions: Transaction[];
+  detailTokens: Token[];
+}
+
+interface Token {
+  name: string;
+  balance: number;
+  decimals: number;
+  symbol: string;
+  address: string;
 }
 
 interface Transaction {
@@ -41,12 +51,15 @@ const INITIAL_STATE: State = {
   numConfirmationsRequired: 0,
   transactionCount: 0,
   transactions: [],
+  detailTokens: [],
 };
 
 const SET = "SET";
 const UPDATE_BALANCE = "UPDATE_BALANCE";
 const ADD_TX = "ADD_TX";
 const UPDATE_TX = "UPDATE_TX";
+const UPDATE_TOKEN_DETAIL = "UPDATE_TOKEN_DETAIL";
+const ADD_TOKEN = "ADD_TOKEN";
 
 interface Set {
   type: "SET";
@@ -57,6 +70,14 @@ interface Set {
     numConfirmationsRequired: number;
     transactionCount: number;
     transactions: Transaction[];
+    detailTokens: Token[];
+  };
+}
+
+interface addToken {
+  type: "ADD_TOKEN";
+  data: {
+    token: Token;
   };
 }
 
@@ -64,6 +85,13 @@ interface UpdateBalance {
   type: "UPDATE_BALANCE";
   data: {
     balance: string;
+  };
+}
+
+interface UpdateTokenDetail {
+  type: "UPDATE_TOKEN_DETAIL";
+  data: {
+    detailTokens: Token[];
   };
 }
 
@@ -89,7 +117,13 @@ interface UpdateTx {
   };
 }
 
-type Action = Set | UpdateBalance | AddTx | UpdateTx;
+type Action =
+  | Set
+  | UpdateBalance
+  | AddTx
+  | UpdateTx
+  | UpdateTokenDetail
+  | addToken;
 
 function reducer(state: State = INITIAL_STATE, action: Action) {
   switch (action.type) {
@@ -103,6 +137,18 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
       return {
         ...state,
         balance: action.data.balance,
+      };
+    }
+    case UPDATE_TOKEN_DETAIL: {
+      return {
+        ...state,
+        detailTokens: action.data.detailTokens,
+      };
+    }
+    case ADD_TOKEN: {
+      return {
+        ...state,
+        detailTokens: [...state.detailTokens, action.data.token],
       };
     }
     case ADD_TX: {
@@ -184,6 +230,7 @@ interface SetInputs {
   numConfirmationsRequired: number;
   transactionCount: number;
   transactions: Transaction[];
+  detailTokens: Token[];
 }
 
 interface UpdateBalanceInputs {
@@ -198,6 +245,10 @@ interface AddTxInputs {
   token: string;
 }
 
+interface AddTokenInputs {
+  token: Token;
+}
+
 interface UpdateTxInputs {
   account: string;
   txIndex: string;
@@ -205,13 +256,18 @@ interface UpdateTxInputs {
   confirmed?: boolean;
   executed?: boolean;
 }
+interface UpdateTokenDetailInputs {
+  detailTokens: Token[];
+}
 
 const MultiSigWalletContext = createContext({
   state: INITIAL_STATE,
   set: (_data: SetInputs) => {},
   updateBalance: (_data: UpdateBalanceInputs) => {},
+  addTokenCoin: (_data: AddTokenInputs) => {},
   addTx: (_data: AddTxInputs) => {},
   updateTx: (_data: UpdateTxInputs) => {},
+  updateTokenDetailList: (_data: UpdateTokenDetailInputs) => {},
 });
 
 export function useMultiSigWalletContext() {
@@ -233,6 +289,20 @@ export const Provider: React.FC<ProviderProps> = ({ children }) => {
   function updateBalance(data: UpdateBalanceInputs) {
     dispatch({
       type: UPDATE_BALANCE,
+      data,
+    });
+  }
+
+  function addTokenCoin(data: AddTokenInputs) {
+    dispatch({
+      type: ADD_TOKEN,
+      data,
+    });
+  }
+
+  function updateTokenDetailList(data: UpdateTokenDetailInputs) {
+    dispatch({
+      type: UPDATE_TOKEN_DETAIL,
       data,
     });
   }
@@ -260,6 +330,8 @@ export const Provider: React.FC<ProviderProps> = ({ children }) => {
           updateBalance,
           addTx,
           updateTx,
+          addTokenCoin,
+          updateTokenDetailList,
         }),
         [state]
       )}
@@ -273,9 +345,8 @@ export function Updater() {
   const {
     state: { web3, account },
   } = useWeb3Context();
-  const { state, set, updateBalance, addTx, updateTx } =
+  const { state, set, updateBalance, updateTokenDetailList, addTx, updateTx } =
     useMultiSigWalletContext();
-
   // useEffect(() => {
   //   async function get(web3: Web3, account: string, wallet: string) {
   //     try {
@@ -289,7 +360,30 @@ export function Updater() {
   //   if (web3) {
   //     get(web3, account, "addd");
   //   }
-  // }, [web3]);
+  // }, [state.address]);
+
+  // useEffect(() => {
+  //   async function get(
+  //     web3: Web3,
+  //     account: string,
+  //     wallet: string,
+  //     tokens: string[]
+  //   ) {
+  //     try {
+  //       const tokenList = await getTokenListInfo(web3, account, {
+  //         wallet,
+  //         tokens: tokens,
+  //       });
+  //       console.log(tokenList);
+  //       updateTokenDetailList({ detailTokens: tokenList });
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  //   if (web3) {
+  //     get(web3, account, state.address, state.tokens);
+  //   }
+  // }, [state.address]);
 
   useEffect(() => {
     if (web3 && state.address) {

@@ -97,6 +97,7 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
       if (error) {
         alert(`Error: ${error.message}`);
       } else {
+        closeWithDrawForm();
         setWithDrawValue(0);
       }
     }

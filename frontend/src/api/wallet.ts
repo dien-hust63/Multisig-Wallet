@@ -2,7 +2,7 @@ import Web3 from "web3";
 import BN from "bn.js";
 import TruffleContract from "@truffle/contract";
 import walletTruffle from "../build/contracts/Wallet.json";
-import {} from "../api/wallet";
+import { getTokenInfo, getTokenListInfo } from "./token";
 
 // @ts-ignore
 const Wallet = TruffleContract(walletTruffle);
@@ -17,6 +17,13 @@ interface Transaction {
   isConfirmedByCurrentAccount: boolean;
   token: string;
 }
+interface Token {
+  name: string;
+  balance: number;
+  decimals: number;
+  symbol: string;
+  address: string;
+}
 
 interface GetResponse {
   name: string;
@@ -27,6 +34,7 @@ interface GetResponse {
   numConfirmationsRequired: number;
   transactionCount: number;
   transactions: Transaction[];
+  detailTokens: Token[];
 }
 
 export async function get(
@@ -42,6 +50,10 @@ export async function get(
   const tokens = await multiSig.getTokens();
   const numConfirmationsRequired = await multiSig.numConfirmationsRequired();
   const transactionCount = await multiSig.getTransactionCount();
+  const detailTokens = await getTokenListInfo(web3, account, {
+    wallet,
+    tokens,
+  });
 
   // get 10 most recent tx
   const count = transactionCount.toNumber();
@@ -53,7 +65,6 @@ export async function get(
     }
 
     const tx = await multiSig.getTransaction(txIndex);
-    console.log(tx);
     const isConfirmed = await multiSig.isConfirmed(txIndex, account);
 
     transactions.push({
@@ -63,7 +74,7 @@ export async function get(
       data: tx.data,
       token: tx.token,
       executed: tx.executed,
-      numConfirmations: 1,
+      numConfirmations: tx.numConfirmations,
       isConfirmedByCurrentAccount: isConfirmed,
     });
   }
@@ -77,6 +88,7 @@ export async function get(
     numConfirmationsRequired: numConfirmationsRequired.toNumber(),
     transactionCount: count,
     transactions,
+    detailTokens,
   };
 }
 
@@ -241,9 +253,18 @@ export async function createToken(
   Wallet.setProvider(web3.currentProvider);
   const multiSig = await Wallet.at(wallet);
 
-  await multiSig.createToken(name, symbol, decimals, total, {
-    from: account,
-  });
+  const tokenAddress = await multiSig.createToken(
+    name,
+    symbol,
+    decimals,
+    total,
+    {
+      from: account,
+    }
+  );
+  const tokens = await multiSig.getTokens();
+  const tokenInfo = await getTokenInfo(web3, tokens[tokens.length - 1], wallet);
+  return tokenInfo;
 }
 
 export async function getBalanceOfToken(

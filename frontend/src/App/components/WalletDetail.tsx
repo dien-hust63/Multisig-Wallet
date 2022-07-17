@@ -5,15 +5,22 @@ import { useWeb3Context } from "../../contexts/Web3";
 import "../../css/components/walletdetail.css";
 import useAsync from "../../components/useAsync";
 import { confirmTransaction } from "../../api/wallet";
+import CreateTokenForm from "../Form/CreateToken";
+
 function WalletDetail() {
   const {
     state: { web3, account, balance, netId },
     updateAccount,
   } = useWeb3Context();
+
+  const {
+    state: { address },
+  } = useMultiSigWalletContext();
   const { state } = useMultiSigWalletContext();
   const [showRegionOwner, setShowRegionOwners] = useState(true);
   const [showRegionToken, setShowRegionToken] = useState(true);
   const [showRegionTrans, setShowRegionTrans] = useState(true);
+  const [createTokenFormOpen, setCreateTokenForm] = useState(false);
   interface ConfirmTransParams {
     txIndex: number;
   }
@@ -93,7 +100,11 @@ function WalletDetail() {
               <h4 className="title">Tokens</h4>
             </div>
             <div className="section-right">
-              <Button inverted color="blue">
+              <Button
+                inverted
+                color="blue"
+                onClick={() => setCreateTokenForm(true)}
+              >
                 Add
               </Button>
               <Button
@@ -112,24 +123,28 @@ function WalletDetail() {
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Multisig balance</th>
-                    <th>Account balance</th>
+                    <th>Address</th>
+                    <th>Balance</th>
+                    <th>Symbol</th>
+                    <th>Decimals</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {state.tokens.length ? (
-                    state.tokens.map((token) => {
+                  {state.detailTokens.length ? (
+                    state.detailTokens.map((token) => {
                       return (
-                        <tr>
-                          <td>W2T</td>
-                          <td>0</td>
-                          <td>00</td>
+                        <tr key={token.address}>
+                          <td>{token.name}</td>
+                          <td>{token.address}</td>
+                          <td>{token.balance}</td>
+                          <td>{token.symbol}</td>
+                          <td>{token.decimals}</td>
                         </tr>
                       );
                     })
                   ) : (
                     <tr>
-                      <td colSpan={3} style={{ textAlign: "center" }}>
+                      <td colSpan={5} style={{ textAlign: "center" }}>
                         Ví chưa quản lý token nào!
                       </td>
                     </tr>
@@ -137,6 +152,12 @@ function WalletDetail() {
                 </tbody>
               </table>
             </div>
+          ) : null}
+          {createTokenFormOpen ? (
+            <CreateTokenForm
+              closeCreateTokenForm={() => setCreateTokenForm(false)}
+              wallet={address}
+            />
           ) : null}
         </div>
         <div className="wallet-detail-region">
