@@ -15,6 +15,7 @@ import { useMultiSigWalletContext } from "../contexts/MultiSigWallet";
 import { updateCommaList } from "typescript";
 import { useAppContext } from "../contexts/App";
 import { get } from "../api/wallet";
+import ImportWalletForm from "./Form/ImportWallet";
 
 function App() {
   const {
@@ -30,6 +31,7 @@ function App() {
   const { state, set } = useMultiSigWalletContext();
   const [chosenWallet, setChosenWallet] = useState("");
   const [walletOpen, setWalletOpen] = useState(false);
+  const [importWallet, setImportWallet] = useState(false);
   const [showMainDisplay, setShowMainDisplay] = useState(true);
   const [depositFormOpen, setDepositFormOpen] = useState(false);
   const [withdrawFormOpen, setWithDrawFormOpen] = useState(false);
@@ -103,6 +105,13 @@ function App() {
               <div className="wallet-header">
                 <h2>Wallets</h2>
                 <div>
+                  <Button
+                    inverted
+                    color="blue"
+                    onClick={() => setImportWallet(true)}
+                  >
+                    Import
+                  </Button>
                   <Button inverted color="blue" onClick={openCreateWalletForm}>
                     Add
                   </Button>
@@ -129,7 +138,7 @@ function App() {
                           {wallet.name}
                         </td>
                         <td>{wallet.address}</td>
-                        <td>{wallet.balance}</td>
+                        <td>{wallet.balance} ETH</td>
                         <td>
                           <div className="required-confirm">
                             <div className="number-required">
@@ -183,6 +192,12 @@ function App() {
       {withdrawFormOpen ? (
         <WithdrawForm
           closeWithDrawForm={() => setWithDrawFormOpen(false)}
+          wallet={chosenWallet}
+        />
+      ) : null}
+      {importWallet ? (
+        <ImportWalletForm
+          closeImportWallet={() => setImportWallet(false)}
           wallet={chosenWallet}
         />
       ) : null}

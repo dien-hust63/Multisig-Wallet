@@ -6,6 +6,7 @@ import { useWeb3Context } from "../../contexts/Web3";
 import { deposit } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
 import "../../css/form/depositform.css";
+import { useAppContext } from "../../contexts/App";
 
 interface Props {
   closeDepositForm: () => void;
@@ -23,6 +24,8 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
   const {
     state: { web3, account },
   } = useWeb3Context();
+
+  const { updateBalanceWallet } = useAppContext();
 
   const [depositValue, setDepositValue] = useState(0);
   const walletAddr = wallet;
@@ -87,6 +90,11 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
         alert(`Error: ${error.message}`);
       } else {
         setDepositValue(0);
+        let valueEther = web3.utils.fromWei(depositValue.toString(), "ether");
+        updateBalanceWallet({
+          address: wallet,
+          balance: Number(Number(valueEther).toFixed(4)),
+        });
         closeDepositForm();
         alert("deposit successfully");
       }

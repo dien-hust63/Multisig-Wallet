@@ -18,7 +18,7 @@ export async function unlockAccount() {
     "ether"
   );
 
-  return { web3, account: accounts[0] || "", balance: Number(balance).toFixed(2) };
+  return { web3, account: accounts[0] || "", balance: Number(balance).toFixed(4) };
 }
 
 export function subscribeToAccount(

@@ -36,7 +36,10 @@ export async function get(
 ): Promise<GetResponse> {
   Wallet.setProvider(web3.currentProvider);
   const multiSig = await Wallet.at(wallet);
-  const balance = await web3.eth.getBalance(multiSig.address);
+  const balance = web3.utils.fromWei(
+    await web3.eth.getBalance(multiSig.address),
+    "ether"
+  );
   const owners = await multiSig.getOwners();
   const name = await multiSig.name();
   const tokens = await multiSig.getTokens();
@@ -71,7 +74,7 @@ export async function get(
   return {
     name,
     address: multiSig.address,
-    balance,
+    balance: Number(balance).toFixed(4),
     owners,
     tokens,
     numConfirmationsRequired: numConfirmationsRequired.toNumber(),

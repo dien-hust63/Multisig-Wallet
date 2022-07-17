@@ -1,7 +1,7 @@
 @import url("./baseform.css");
-.withdraw-form{
+.import-wallet-form{
     width:60%;
-    height: 60%;
+    height: 40%;
     background-color: #1f3747;
     border-radius: 4px;
     position: relative;

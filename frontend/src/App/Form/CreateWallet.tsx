@@ -145,8 +145,8 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
         balance: parseInt(wallet.balance),
         numConfirmationsRequired: wallet.numConfirmationsRequired,
       });
-      alert("create wallet successfully");
       closeCreateWalletForm();
+      alert("create wallet successfully");
     } else {
       alert("no web3");
     }

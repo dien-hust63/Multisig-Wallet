@@ -82,19 +82,38 @@ function reducer(state: State = INIT_STATE, action: Action) {
       };
     }
     case ADD_WALLET: {
+      localStorage.setItem(
+        "wallet",
+        JSON.stringify({
+          ...state,
+          wallets: [...state.wallets, action.data],
+        })
+      );
       return {
         ...state,
         wallets: [...state.wallets, action.data],
       };
     }
     case UPDATE_BALANCE: {
+      let curWallet = state.wallets;
+      let index = curWallet.findIndex((x) => x.address == action.data.address);
+      if (index >= 0) {
+        curWallet[index].balance += action.data.balance;
+      }
       return {
         ...state,
+        wallets: [...curWallet],
       };
     }
     case UPDATE_WALLET: {
+      let curWallet = state.wallets;
+      let index = curWallet.findIndex((x) => x.address == action.data.address);
+      if (index >= 0) {
+        curWallet[index] = { ...action.data };
+      }
       return {
         ...state,
+        wallets: [...curWallet],
       };
     }
     default: {
@@ -114,11 +133,16 @@ interface AddWalletInputs {
   balance: number;
   numConfirmationsRequired: number;
 }
-
+interface UpdateBalanceInputs {
+  address: string;
+  balance: number;
+}
 const AppContext = createContext({
   state: INIT_STATE,
   set: (_data: SetInputs) => {},
   addWallet: (_data: AddWalletInputs) => {},
+  updateWallet: (_data: AddWalletInputs) => {},
+  updateBalanceWallet: (_data: UpdateBalanceInputs) => {},
 });
 
 export function useAppContext() {
@@ -144,6 +168,20 @@ export const Provider: React.FC<ProviderProps> = ({ children }) => {
     });
   }
 
+  function updateWallet(data: AddWalletInputs) {
+    dispatch({
+      type: UPDATE_WALLET,
+      data,
+    });
+  }
+
+  function updateBalanceWallet(data: UpdateBalanceInputs) {
+    dispatch({
+      type: UPDATE_BALANCE,
+      data,
+    });
+  }
+
   return (
     <AppContext.Provider
       value={useMemo(
@@ -151,6 +189,8 @@ export const Provider: React.FC<ProviderProps> = ({ children }) => {
           state,
           set,
           addWallet,
+          updateWallet,
+          updateBalanceWallet,
         }),
         [state]
       )}

@@ -1,3 +1,4 @@
+@import url("./baseform.css");
 .deposit-form{
     width:60%;
     height: 40%;
@@ -9,8 +10,4 @@
     flex-direction: column;
     color: rgba(255, 255, 255, 0.8);
     padding: 2% 2%;
-}
-
-.form-body .form label{
-    color: #fff !important;
 }
