@@ -75,7 +75,7 @@ const CreateTokenForm: React.FC<Props> = ({ closeCreateTokenForm, wallet }) => {
       wallet,
     });
     if (error) {
-      Swal.fire(`Error ${error.message}`, "", "success");
+      Swal.fire(`Error ${error.message}`, "", "warning");
     } else {
       addTokenCoin({
         token: data,

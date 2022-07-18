@@ -55,11 +55,11 @@ export async function get(
   const numConfirmationsRequired = await multiSig.numConfirmationsRequired();
   const transactionCount = await multiSig.getTransactionCount();
   let detailTokens: Token[] = [];
-  if (tokens.length != 0)
-    detailTokens = await getTokenListInfo(web3, account, {
-      wallet,
-      tokens,
-    });
+  if (tokens.length != 0) console.log(tokens);
+  detailTokens = await getTokenListInfo(web3, account, {
+    wallet,
+    tokens,
+  });
   // get 10 most recent tx
   const count = transactionCount.toNumber();
   const transactions: Transaction[] = [];
