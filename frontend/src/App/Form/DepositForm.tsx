@@ -142,7 +142,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
             loading={pending}
             onClick={depositWallet}
           >
-            Send transaction
+            Deposit
           </Button>
           <Button
             color="red"

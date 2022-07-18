@@ -5,7 +5,7 @@ import { Button, Form } from "semantic-ui-react";
 import { useWeb3Context } from "../../contexts/Web3";
 import { createToken } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
-import "../../css/form/depositform.css";
+import "../../css/form/createtoken.css";
 import { useMultiSigWalletContext } from "../../contexts/MultiSigWallet";
 import Swal from "sweetalert2";
 
