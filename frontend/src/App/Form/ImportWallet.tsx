@@ -40,7 +40,7 @@ const ImportWalletForm: React.FC<Props> = ({ closeImportWallet, wallet }) => {
       closeImportWallet();
       Swal.fire("Import wallet successfully", "", "success");
     } else {
-      Swal.fire("No web3", "", "warning");
+      Swal.fire("You must unclock Metamask", "", "warning");
     }
   }
 

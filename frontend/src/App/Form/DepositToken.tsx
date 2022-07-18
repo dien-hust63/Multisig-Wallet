@@ -56,7 +56,7 @@ const DepositTokenForm: React.FC<Props> = ({
     }
 
     if (!web3) {
-      Swal.fire("No web3", "", "warning");
+      Swal.fire("You must unclock Metamask", "", "warning");
       return;
     }
     const value = Web3.utils.toBN(depositTokenValue);

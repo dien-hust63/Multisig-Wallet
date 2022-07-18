@@ -82,7 +82,7 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
     }
 
     if (!web3) {
-      Swal.fire("Error: No web3", "", "error");
+      Swal.fire("You must unclock Metamask", "", "error");
       return;
     }
     const { error, data } = await confirmCall({
@@ -102,8 +102,7 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
     }
 
     if (!web3) {
-      alert("No web3");
-      Swal.fire("Error: No web3", "", "error");
+      Swal.fire("You must unclock Metamask", "", "error");
       return;
     }
     const { error, data } = await executeCall({

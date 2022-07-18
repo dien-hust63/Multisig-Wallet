@@ -45,7 +45,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
     }
 
     if (!web3) {
-      Swal.fire("No web3", "", "warning");
+      Swal.fire("You must unclock Metamask", "", "warning");
       return;
     }
 
@@ -74,7 +74,7 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
     }
 
     if (!web3) {
-      Swal.fire("No web3", "", "warning");
+      Swal.fire("You must unclock Metamask", "", "warning");
       return;
     }
     const value = Web3.utils.toBN(depositValue);

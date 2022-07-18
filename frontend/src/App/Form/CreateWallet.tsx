@@ -149,7 +149,7 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
       closeCreateWalletForm();
       Swal.fire("Create wallet successfully", "", "success");
     } else {
-      Swal.fire("No web3", "", "warning");
+      Swal.fire("You must unclock Metamask", "", "warning");
     }
   }
 

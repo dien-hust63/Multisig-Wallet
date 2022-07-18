@@ -45,7 +45,7 @@ const AddUserForm: React.FC<Props> = ({ closeAddUserForm, wallet }) => {
     }
 
     if (!web3) {
-      Swal.fire("No web3", "", "warning");
+      Swal.fire("You must unclock Metamask", "", "warning");
       return;
     }
     const { error, data } = await call({
