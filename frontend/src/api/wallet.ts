@@ -49,6 +49,7 @@ export async function get(
     await web3.eth.getBalance(multiSig.address),
     "ether"
   );
+  debugger
   const owners = await multiSig.getOwners();
   const name = await multiSig.name();
   const tokens = await multiSig.getTokens();
