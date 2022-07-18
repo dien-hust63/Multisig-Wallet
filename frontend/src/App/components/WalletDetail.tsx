@@ -303,6 +303,7 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
                     <th>ID</th>
                     <th>Destination</th>
                     <th>Value</th>
+                    <th>Token</th>
                     <th>Data/Subject</th>
                     <th>Confirmations</th>
                     <th>Executed</th>
@@ -315,6 +316,7 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
                         <td>{i + 1}</td>
                         <td>{transaction.destination}</td>
                         <td>{transaction.value.toNumber()} ETH</td>
+                        <td>{transaction.token}</td>
                         <td>{transaction.data}</td>
                         <td>
                           <div className="confirm-cell">

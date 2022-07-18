@@ -43,35 +43,6 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
   function changeAddress(e: React.ChangeEvent<HTMLInputElement>) {
     setAddress(e.target.value);
   }
-  async function onSubmit(_e: React.FormEvent<HTMLFormElement>) {
-    if (pending) {
-      return;
-    }
-
-    if (!web3) {
-      Swal.fire("No web3", "", "warning");
-      return;
-    }
-
-    const value = Web3.utils.toBN(withDrawValue);
-    const zero = Web3.utils.toBN(0);
-
-    if (value.gt(zero)) {
-      const { error } = await withdrawCall({
-        value: withDrawValue.toString(),
-        destination: address,
-        data: "sdasdas",
-        token: "0x0000000000000000000000000000000000000000",
-        wallet,
-      });
-
-      if (error) {
-        Swal.fire(`Error: ${error.message}`, "", "error");
-      } else {
-        setWithDrawValue(0);
-      }
-    }
-  }
 
   async function withDrawWallet() {
     if (pending) {

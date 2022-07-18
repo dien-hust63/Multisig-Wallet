@@ -18,14 +18,6 @@ interface Transaction {
   token: string;
 }
 
-interface Trans {
-  destination: string;
-  value: any;
-  numConfirmations: number;
-  executed: boolean;
-  token: string;
-  data: any;
-}
 interface Token {
   name: string;
   balance: number;
@@ -68,28 +60,7 @@ export async function get(
   });
   // get 10 most recent tx
   const count = transactionCount.toNumber();
-  const transactions: Transaction[] = [
-    {
-      txIndex: 2,
-      destination: "ADGAGSGSGGSGSA",
-      value: new BN(22),
-      data: "string",
-      executed: false,
-      numConfirmations: 0,
-      isConfirmedByCurrentAccount: false,
-      token: "agsashja",
-    },
-    {
-      txIndex: 3,
-      destination: "AGHS",
-      value: new BN(21),
-      data: "string",
-      executed: true,
-      numConfirmations: 0,
-      isConfirmedByCurrentAccount: false,
-      token: "agsashja",
-    },
-  ];
+  const transactions: Transaction[] = [];
   for (let i = 1; i <= 10; i++) {
     const txIndex = count - i;
     if (txIndex < 0) {
@@ -98,17 +69,17 @@ export async function get(
 
     const tx = await multiSig.getTransaction(txIndex);
     const isConfirmed = await multiSig.isConfirmed(txIndex, account);
-
-    // transactions.push({
-    //   txIndex,
-    //   destination: "",
-    //   value: new BN(10),
-    //   data: "aa",
-    //   token: "aas",
-    //   executed: false,
-    //   numConfirmations: 1,
-    //   isConfirmedByCurrentAccount: isConfirmed,
-    // });
+    console.log(tx);
+    transactions.push({
+      txIndex,
+      destination: tx.destination,
+      value: tx.value,
+      data: tx.data,
+      token: tx.token,
+      executed: tx.executed,
+      numConfirmations: tx.numConfirmations.toNumber(),
+      isConfirmedByCurrentAccount: isConfirmed,
+    });
   }
 
   return {
