@@ -246,7 +246,7 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
                     })
                   ) : (
                     <tr>
-                      <td colSpan={5} style={{ textAlign: "center" }}>
+                      <td colSpan={6} style={{ textAlign: "center" }}>
                         Ví chưa quản lý token nào!
                       </td>
                     </tr>
@@ -355,7 +355,7 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} style={{ textAlign: "center" }}>
+                      <td colSpan={7} style={{ textAlign: "center" }}>
                         Chưa có giao dịch nào được thực hiện!
                       </td>
                     </tr>

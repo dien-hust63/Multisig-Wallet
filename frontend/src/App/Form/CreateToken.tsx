@@ -7,6 +7,7 @@ import { createToken } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
 import "../../css/form/depositform.css";
 import { useMultiSigWalletContext } from "../../contexts/MultiSigWallet";
+import Swal from "sweetalert2";
 
 interface Props {
   closeCreateTokenForm: () => void;
@@ -74,7 +75,7 @@ const CreateTokenForm: React.FC<Props> = ({ closeCreateTokenForm, wallet }) => {
       wallet,
     });
     if (error) {
-      alert(`Error: ${error.message}`);
+      Swal.fire(`Error ${error.message}`, "", "success");
     } else {
       addTokenCoin({
         token: data,
@@ -84,7 +85,7 @@ const CreateTokenForm: React.FC<Props> = ({ closeCreateTokenForm, wallet }) => {
       setTokenDecimals(0);
       setTokenTotal(0);
       closeCreateTokenForm();
-      alert("Create Token Success");
+      Swal.fire(`Create successfully`, "", "success");
     }
   }
 
