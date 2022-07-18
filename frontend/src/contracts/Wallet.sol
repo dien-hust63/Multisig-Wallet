@@ -108,7 +108,7 @@ contract Wallet {
             numConfirmations: 1,
             token: _token
         }));
-
+        isConfirmed[txIndex][msg.sender] = true;
         emit SubmitTransaction(msg.sender, txIndex, _destination, _value, _data);
     }
 
