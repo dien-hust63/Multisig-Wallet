@@ -69,7 +69,7 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
     if (!web3) {
       throw new Error("No web3");
     }
-    await createWallet(web3, account, params);
+    return await createWallet(web3, account, params);
   });
 
   function changeName(e: React.ChangeEvent<HTMLInputElement>) {

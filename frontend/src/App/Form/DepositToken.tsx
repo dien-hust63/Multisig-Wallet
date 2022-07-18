@@ -4,6 +4,7 @@ import BN from "bn.js";
 import { Button, Form } from "semantic-ui-react";
 import { useWeb3Context } from "../../contexts/Web3";
 import { deposit } from "../../api/wallet";
+import { transferToken } from "../../api/token";
 import useAsync from "../../components/useAsync";
 import "../../css/form/depositform.css";
 import { useMultiSigWalletContext } from "../../contexts/MultiSigWallet";
@@ -16,10 +17,9 @@ interface Props {
 }
 
 interface DepositParams {
-  web3: Web3;
-  account: string;
   value: BN;
-  wallet: string;
+  destination: string;
+  token: string;
 }
 
 const DepositTokenForm: React.FC<Props> = ({
@@ -35,45 +35,23 @@ const DepositTokenForm: React.FC<Props> = ({
 
   const [depositTokenValue, setDepositTokenValue] = useState(0);
   const walletAddr = wallet;
-  const { pending, call } = useAsync<DepositParams, void>(
-    ({ web3, account, value, wallet }) =>
-      deposit(web3, account, { value, wallet })
-  );
+
+  const { pending: depositPending, call: depositCall } = useAsync<
+    DepositParams,
+    boolean
+  >(async (params) => {
+    if (!web3) {
+      throw new Error("No web3");
+    }
+    return await transferToken(web3, account, params);
+  });
 
   function changeDepositValue(e: React.ChangeEvent<HTMLInputElement>) {
     setDepositTokenValue(Number(e.target.value));
   }
-  async function onSubmit(_e: React.FormEvent<HTMLFormElement>) {
-    if (pending) {
-      return;
-    }
-
-    if (!web3) {
-      Swal.fire("No web3", "", "warning");
-      return;
-    }
-
-    const value = Web3.utils.toBN(depositTokenValue);
-    const zero = Web3.utils.toBN(0);
-
-    if (value.gt(zero)) {
-      const { error } = await call({
-        web3,
-        account,
-        value,
-        wallet: walletAddr,
-      });
-
-      if (error) {
-        Swal.fire(`Error: ${error.message}`, "", "error");
-      } else {
-        setDepositTokenValue(0);
-      }
-    }
-  }
 
   async function depositTokenWallet() {
-    if (pending) {
+    if (depositPending) {
       return;
     }
 
@@ -85,13 +63,11 @@ const DepositTokenForm: React.FC<Props> = ({
     const zero = Web3.utils.toBN(0);
 
     if (value.gt(zero)) {
-      const { error, data } = await call({
-        web3,
-        account,
+      const { error, data } = await depositCall({
         value,
-        wallet: walletAddr,
+        destination: wallet,
+        token,
       });
-      debugger;
       if (error) {
         Swal.fire(`Error: ${error.message}`, "", "error");
       } else {
@@ -136,16 +112,16 @@ const DepositTokenForm: React.FC<Props> = ({
         <div className="form-footer">
           <Button
             color="blue"
-            disabled={pending}
-            loading={pending}
+            disabled={depositPending}
+            loading={depositPending}
             onClick={depositTokenWallet}
           >
             Send transaction
           </Button>
           <Button
             color="red"
-            disabled={pending}
-            loading={pending}
+            disabled={depositPending}
+            loading={depositPending}
             onClick={closeDepositTokenForm}
           >
             Cancel

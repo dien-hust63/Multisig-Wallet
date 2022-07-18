@@ -93,3 +93,21 @@ export async function getBalanceOf(
   Token.setProvider(web3.currentProvider);
   return await Token;
 }
+
+export async function transferToken(
+  web3: Web3,
+  account: string,
+  params: {
+    token: string;
+    value: BN;
+    destination: string;
+  }
+) {
+  const { token, value, destination } = params;
+  Token.setProvider(web3.currentProvider);
+  const tk = await Token.at(token);
+  await tk.transfer(destination, value, {
+    from: account,
+  });
+  return true;
+}
