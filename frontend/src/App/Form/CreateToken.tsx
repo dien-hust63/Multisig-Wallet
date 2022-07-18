@@ -91,7 +91,7 @@ const CreateTokenForm: React.FC<Props> = ({ closeCreateTokenForm, wallet }) => {
 
   return (
     <div className="base-form-mask">
-      <div className="deposit-form">
+      <div className="create-token-form">
         <div className="form-header">
           <h1>Create New Token</h1>
         </div>

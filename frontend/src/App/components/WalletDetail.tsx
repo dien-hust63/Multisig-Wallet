@@ -315,7 +315,17 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
                       <tr key={transaction.txIndex}>
                         <td>{i + 1}</td>
                         <td>{transaction.destination}</td>
-                        <td>{transaction.value.toNumber()} ETH</td>
+                        <td>
+                          {web3
+                            ? Number(
+                                web3.utils.fromWei(
+                                  Number(transaction.value).toString(),
+                                  "ether"
+                                )
+                              ).toFixed(4)
+                            : 0}
+                          ETH
+                        </td>
                         <td>{transaction.token}</td>
                         <td>{transaction.data}</td>
                         <td>

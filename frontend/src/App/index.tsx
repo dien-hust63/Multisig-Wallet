@@ -146,50 +146,58 @@ function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {wallets.map((wallet) => {
-                    return (
-                      <tr key={wallet.address}>
-                        <td
-                          onClick={() => openWalletDetail(wallet.address)}
-                          className="change-detail-link"
-                        >
-                          {wallet.name}
-                        </td>
-                        <td>{wallet.address}</td>
-                        <td>{wallet.balance} ETH</td>
-                        <td>
-                          <div className="required-confirm">
-                            <div className="number-required">
-                              {wallet.numConfirmationsRequired}
-                            </div>
-                            {/* <Button
+                  {wallets.length ? (
+                    wallets.map((wallet) => {
+                      return (
+                        <tr key={wallet.address}>
+                          <td
+                            onClick={() => openWalletDetail(wallet.address)}
+                            className="change-detail-link"
+                          >
+                            {wallet.name}
+                          </td>
+                          <td>{wallet.address}</td>
+                          <td>{wallet.balance} ETH</td>
+                          <td>
+                            <div className="required-confirm">
+                              <div className="number-required">
+                                {wallet.numConfirmationsRequired}
+                              </div>
+                              {/* <Button
                               color="grey"
                               onClick={depositWallet}
                               size="tiny"
                             >
                               Edit
                             </Button> */}
-                          </div>
-                        </td>
-                        <td>
-                          <Button
-                            color="blue"
-                            onClick={(e) => depositWallet(e, wallet.address)}
-                            size="tiny"
-                          >
-                            Deposit
-                          </Button>
-                          <Button
-                            color="grey"
-                            onClick={(e) => withdrawWallet(e, wallet.address)}
-                            size="tiny"
-                          >
-                            Withdraw
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                            </div>
+                          </td>
+                          <td>
+                            <Button
+                              color="blue"
+                              onClick={(e) => depositWallet(e, wallet.address)}
+                              size="tiny"
+                            >
+                              Deposit
+                            </Button>
+                            <Button
+                              color="grey"
+                              onClick={(e) => withdrawWallet(e, wallet.address)}
+                              size="tiny"
+                            >
+                              Withdraw
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: "center" }}>
+                        Chưa có ví nào.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
