@@ -24,6 +24,7 @@ interface DepositParams {
 const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
   const {
     state: { web3, account },
+    updateAccount,
   } = useWeb3Context();
 
   const { updateBalanceWallet } = useAppContext();
@@ -60,7 +61,6 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
       });
 
       if (error) {
-        
         Swal.fire(`Error: ${error.message}`, "", "error");
       } else {
         setDepositValue(0);
@@ -96,6 +96,16 @@ const DepositForm: React.FC<Props> = ({ closeDepositForm, wallet }) => {
         updateBalanceWallet({
           address: wallet,
           balance: Number(Number(valueEther).toFixed(4)),
+        });
+        const balance = web3.utils.fromWei(
+          await web3.eth.getBalance(account),
+          "ether"
+        );
+        const newBalance = Number(balance).toFixed(4);
+        updateAccount({
+          account: account,
+          balance: newBalance,
+          web3: web3,
         });
         closeDepositForm();
         Swal.fire(`Deposit successfully`, "", "success");
