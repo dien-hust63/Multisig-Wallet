@@ -69,6 +69,7 @@ const WithdrawForm: React.FC<Props> = ({ closeWithDrawForm, wallet }) => {
       if (error) {
         Swal.fire(`Error: ${error.message}`, "", "error");
       } else {
+        Swal.fire("Withdraw ETH successfully", "", "success");
         closeWithDrawForm();
         setWithDrawValue(0);
       }

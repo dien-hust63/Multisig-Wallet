@@ -147,7 +147,7 @@ const CreateWalletForm: React.FC<Props> = ({ closeCreateWalletForm }) => {
         numConfirmationsRequired: wallet.numConfirmationsRequired,
       });
       closeCreateWalletForm();
-      Swal.fire("Create wallet successfully", "", "warning");
+      Swal.fire("Create wallet successfully", "", "success");
     } else {
       Swal.fire("No web3", "", "warning");
     }
