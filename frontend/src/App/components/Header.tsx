@@ -5,6 +5,7 @@ import { useWeb3Context } from "../../contexts/Web3";
 import useAsync from "../../components/useAsync";
 import "../../css/components/header.css";
 import Network from "../Network";
+import { useAppContext } from "../../contexts/App";
 interface Props {
   backMainDisplay: () => void;
 }
@@ -14,6 +15,11 @@ const Header: React.FC<Props> = ({ backMainDisplay }) => {
     updateAccount,
   } = useWeb3Context();
 
+  const {
+    state: { wallets },
+    set,
+  } = useAppContext();
+
   const { pending, error, call } = useAsync(unlockAccount);
   async function onClickConnect() {
     const { error, data } = await call(null);
@@ -22,6 +28,12 @@ const Header: React.FC<Props> = ({ backMainDisplay }) => {
       console.error(error);
     }
     if (data) {
+      const result = localStorage.getItem("wallet");
+      if (result) {
+        const wallet = JSON.parse(result);
+        console.log(wallet);
+        set(wallet);
+      }
       updateAccount(data);
     }
   }

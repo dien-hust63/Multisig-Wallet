@@ -131,7 +131,6 @@ export function Updater() {
           window.location.reload();
         }
       });
-
       return unsubscribe;
     }
   }, [state.web3, state.account]);

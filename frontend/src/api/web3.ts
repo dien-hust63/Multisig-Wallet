@@ -30,7 +30,7 @@ export function subscribeToAccount(
       const accounts = await web3.eth.getAccounts();
       callback(null, accounts[0]);
     } catch (error) {
-      callback(error, null);
+      // callback(error, null);
     }
   }, 1000);
 
@@ -48,7 +48,7 @@ export function subscribeToNetId(
       const netId = await web3.eth.net.getId();
       callback(null, netId);
     } catch (error) {
-      callback(error, null);
+      // callback(error, null);
     }
   }, 1000);
 
