@@ -3,10 +3,9 @@ import Web3 from "web3";
 import BN from "bn.js";
 import { Button, Form } from "semantic-ui-react";
 import { useWeb3Context } from "../../contexts/Web3";
-import { addUserToWallet, deposit } from "../../api/wallet";
+import { submitRequestOwner } from "../../api/wallet";
 import useAsync from "../../components/useAsync";
 import "../../css/form/depositform.css";
-import { useAppContext } from "../../contexts/App";
 import Swal from "sweetalert2";
 import { useMultiSigWalletContext } from "../../contexts/MultiSigWallet";
 
@@ -15,11 +14,11 @@ interface Props {
   wallet: string;
 }
 
-interface AddUserParams {
-  web3: Web3;
-  account: string;
+interface addOwnerParams {
   address: string;
-  wallet: string;
+  owner: string;
+  data: string;
+  addOwner: boolean;
 }
 
 const AddUserForm: React.FC<Props> = ({ closeAddUserForm, wallet }) => {
@@ -27,37 +26,41 @@ const AddUserForm: React.FC<Props> = ({ closeAddUserForm, wallet }) => {
     state: { web3, account },
   } = useWeb3Context();
 
-  const { updateBalanceWallet } = useAppContext();
   const { addOwner } = useMultiSigWalletContext();
-  const [address, setAddress] = useState("");
-  const { pending, call } = useAsync<AddUserParams, void>(
-    ({ web3, account, address, wallet }) =>
-      addUserToWallet(web3, account, { address, wallet })
-  );
-
-  function changeAddress(e: React.ChangeEvent<HTMLInputElement>) {
-    setAddress(e.target.value);
+  const [owner, setOwner] = useState("");
+  function changeOwner(e: React.ChangeEvent<HTMLInputElement>) {
+    setOwner(e.target.value);
   }
 
+  const { pending: addOwnerPending, call: addOwnerCall } = useAsync<
+    addOwnerParams,
+    void
+  >(async (params) => {
+    if (!web3) {
+      throw new Error("No web3");
+    }
+    return await submitRequestOwner(web3, account, params);
+  });
+
   async function addUser() {
-    if (pending) {
+    if (addOwnerPending) {
       return;
     }
 
     if (!web3) {
-      Swal.fire("You must unclock Metamask", "", "warning");
+      Swal.fire("You must unlock Metamask", "", "warning");
       return;
     }
-    const { error, data } = await call({
-      web3,
-      account,
-      address,
-      wallet,
+    const { error, data } = await addOwnerCall({
+      address: wallet,
+      owner,
+      data: "Add new request owner",
+      addOwner: true,
     });
     if (error) {
       Swal.fire(`Error: ${error.message}`, "", "error");
     } else {
-      addOwner({ address });
+      addOwner({ address: owner });
       closeAddUserForm();
       Swal.fire("Add owner successfully", "", "success");
     }
@@ -76,8 +79,8 @@ const AddUserForm: React.FC<Props> = ({ closeAddUserForm, wallet }) => {
               <Form.Input
                 placeholder=""
                 type="text"
-                value={address}
-                onChange={changeAddress}
+                value={owner}
+                onChange={changeOwner}
               />
             </Form.Field>
           </Form>
@@ -86,16 +89,16 @@ const AddUserForm: React.FC<Props> = ({ closeAddUserForm, wallet }) => {
         <div className="form-footer">
           <Button
             color="blue"
-            disabled={pending}
-            loading={pending}
+            disabled={addOwnerPending}
+            loading={addOwnerPending}
             onClick={addUser}
           >
             Add
           </Button>
           <Button
             color="red"
-            disabled={pending}
-            loading={pending}
+            disabled={addOwnerPending}
+            loading={addOwnerPending}
             onClick={closeAddUserForm}
           >
             Cancel

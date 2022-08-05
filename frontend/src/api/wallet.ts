@@ -26,6 +26,16 @@ interface Token {
   address: string;
 }
 
+interface RequestOwner {
+  reqIndex: number;
+  owner: string;
+  numberConfirmations: number;
+  data: string;
+  executed: boolean;
+  addOwner: boolean;
+  isConfirmedByCurrentAccount: boolean;
+}
+
 interface GetResponse {
   name: string;
   address: string;
@@ -36,6 +46,20 @@ interface GetResponse {
   transactionCount: number;
   transactions: Transaction[];
   detailTokens: Token[];
+}
+
+interface OwnerResponse {
+  owners: string[];
+  requests: RequestOwner[];
+}
+
+interface TokenResponse {
+  tokens: string[];
+  detailTokens: Token[];
+}
+
+interface TransResponse {
+  transactions: Transaction[];
 }
 
 export async function get(
@@ -49,40 +73,12 @@ export async function get(
     await web3.eth.getBalance(multiSig.address),
     "ether"
   );
-  debugger
+
   const owners = await multiSig.getOwners();
   const name = await multiSig.name();
   const tokens = await multiSig.getTokens();
   const numConfirmationsRequired = await multiSig.numConfirmationsRequired();
-  const transactionCount = await multiSig.getTransactionCount();
   let detailTokens: Token[] = [];
-  if (tokens.length != 0) console.log(tokens);
-  detailTokens = await getTokenListInfo(web3, account, {
-    wallet,
-    tokens,
-  });
-  // get 10 most recent tx
-  const count = transactionCount.toNumber();
-  const transactions: Transaction[] = [];
-  for (let i = 1; i <= 10; i++) {
-    const txIndex = count - i;
-    if (txIndex < 0) {
-      break;
-    }
-
-    const tx = await multiSig.getTransaction(txIndex);
-    const isConfirmed = await multiSig.isConfirmed(txIndex, account);
-    transactions.push({
-      txIndex,
-      destination: tx.destination,
-      value: tx.value,
-      data: tx.data,
-      token: tx.token,
-      executed: tx.executed,
-      numConfirmations: tx.numConfirmations.toNumber(),
-      isConfirmedByCurrentAccount: isConfirmed,
-    });
-  }
 
   return {
     name,
@@ -91,8 +87,8 @@ export async function get(
     owners,
     tokens,
     numConfirmationsRequired: numConfirmationsRequired.toNumber(),
-    transactionCount: count,
-    transactions,
+    transactionCount: 1,
+    transactions: [],
     detailTokens,
   };
 }
@@ -158,8 +154,166 @@ export async function addUserToWallet(
   await wallet.addOwner(params.address, {
     from: account,
   });
-  const owners = wallet.getOwners();
+  const owners = await wallet.getOwners();
   return owners;
+}
+
+export async function getTokensApi(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+  }
+): Promise<TokenResponse> {
+  Wallet.setProvider(web3.currentProvider);
+  const wallet = await Wallet.at(params.address);
+
+  const tokens = await wallet.getTokens();
+  let detailTokens: Token[] = [];
+  if (tokens.length != 0) console.log(tokens);
+  detailTokens = await getTokenListInfo(web3, account, {
+    wallet: params.address,
+    tokens,
+  });
+
+  return {
+    tokens,
+    detailTokens,
+  };
+}
+
+export async function getTransactionsApi(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+  }
+): Promise<TransResponse> {
+  Wallet.setProvider(web3.currentProvider);
+  const wallet = await Wallet.at(params.address);
+  const transactionCount = await wallet.getTransactionCount();
+  const count = transactionCount.toNumber();
+  const transactions: Transaction[] = [];
+  for (let i = 1; i <= 10; i++) {
+    const txIndex = count - i;
+    if (txIndex < 0) {
+      break;
+    }
+
+    const tx = await wallet.getTransaction(txIndex);
+    const isConfirmed = await wallet.isConfirmed(txIndex, account);
+    transactions.push({
+      txIndex,
+      destination: tx.destination,
+      value: tx.value,
+      data: tx.data,
+      token: tx.token,
+      executed: tx.executed,
+      numConfirmations: tx.numConfirmations.toNumber(),
+      isConfirmedByCurrentAccount: isConfirmed,
+    });
+  }
+  return {
+    transactions,
+  };
+}
+
+export async function getOwnersApi(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+  }
+): Promise<OwnerResponse> {
+  Wallet.setProvider(web3.currentProvider);
+  const wallet = await Wallet.at(params.address);
+  const owners = await wallet.getOwners();
+  const reqCount = await wallet.getRequestOwnerCount();
+  const count = reqCount.toNumber();
+  const requests: RequestOwner[] = [];
+
+  if (count !== 0) {
+    for (let i = 1; i <= 10; i++) {
+      const reqIndex = count - i;
+      if (reqIndex < 0) {
+        break;
+      }
+
+      const req = await wallet.getRequestOwner(reqIndex);
+      const isConfirmed = await wallet.reqConfirmed(reqIndex, account);
+      console.log(req.numConfirmations);
+      requests.push({
+        reqIndex,
+        owner: req.owner,
+        numberConfirmations: req.numConfirmations.toNumber(),
+        data: req.data,
+        executed: req.executed,
+        addOwner: req.addOwner,
+        isConfirmedByCurrentAccount: isConfirmed,
+      });
+    }
+  }
+  return {
+    owners,
+    requests,
+  };
+}
+
+export async function submitRequestOwner(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+    owner: string;
+    data: string;
+    addOwner: boolean;
+  }
+) {
+  const { address, owner, data, addOwner } = params;
+  Wallet.setProvider(web3.currentProvider);
+  const wallet = await Wallet.at(address);
+  await wallet.submitRequestOwner(
+    owner,
+    new TextEncoder().encode(data),
+    addOwner,
+    {
+      from: account,
+    }
+  );
+}
+
+export async function confirmRequestOwner(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+    reqIndex: number;
+  }
+) {
+  const { address, reqIndex } = params;
+  Wallet.setProvider(web3.currentProvider);
+  const wallet = await Wallet.at(address);
+
+  await wallet.confirmRequestOwner(reqIndex, {
+    from: account,
+  });
+}
+
+export async function executeRequestOwner(
+  web3: Web3,
+  account: string,
+  params: {
+    address: string;
+    reqIndex: number;
+  }
+) {
+  const { address, reqIndex } = params;
+  Wallet.setProvider(web3.currentProvider);
+  const wallet = await Wallet.at(address);
+
+  await wallet.executeRequestOwner(reqIndex, {
+    from: account,
+  });
 }
 
 export async function getWalletAtAddress(

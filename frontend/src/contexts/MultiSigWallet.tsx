@@ -9,7 +9,6 @@ import React, {
 } from "react";
 import { useWeb3Context } from "./Web3";
 import { get as getMultiSigWallet, subscribe } from "../api/wallet";
-import { getTokenListInfo } from "../api/token";
 
 interface State {
   name: string;
@@ -21,6 +20,17 @@ interface State {
   transactionCount: number;
   transactions: Transaction[];
   detailTokens: Token[];
+  requestOwners: RequestOwner[];
+}
+
+interface RequestOwner {
+  reqIndex: number;
+  owner: string;
+  numberConfirmations: number;
+  data: string;
+  executed: boolean;
+  addOwner: boolean;
+  isConfirmedByCurrentAccount: boolean;
 }
 
 interface Token {
@@ -52,6 +62,7 @@ const INITIAL_STATE: State = {
   transactionCount: 0,
   transactions: [],
   detailTokens: [],
+  requestOwners: [],
 };
 
 const SET = "SET";
@@ -61,6 +72,9 @@ const UPDATE_TX = "UPDATE_TX";
 const ADD_OWNER = "ADD_OWNER";
 const UPDATE_TOKEN_DETAIL = "UPDATE_TOKEN_DETAIL";
 const ADD_TOKEN = "ADD_TOKEN";
+const GET_TOKENS = "GET_TOKENS";
+const GET_TRANS = "GET_TRANS";
+const GET_OWNERS = "GET_OWNERS";
 
 interface Set {
   type: "SET";
@@ -72,6 +86,7 @@ interface Set {
     transactionCount: number;
     transactions: Transaction[];
     detailTokens: Token[];
+    requestOwners: RequestOwner[];
   };
 }
 
@@ -124,6 +139,29 @@ interface UpdateTx {
   };
 }
 
+interface GetTokens {
+  type: "GET_TOKENS";
+  data: {
+    tokens: string[];
+    detailTokens: Token[];
+  };
+}
+
+interface GetTrans {
+  type: "GET_TRANS";
+  data: {
+    transactions: Transaction[];
+  };
+}
+
+interface GetOwners {
+  type: "GET_OWNERS";
+  data: {
+    owners: string[];
+    requests: RequestOwner[];
+  };
+}
+
 type Action =
   | Set
   | UpdateBalance
@@ -131,7 +169,10 @@ type Action =
   | UpdateTx
   | UpdateTokenDetail
   | addToken
-  | AddOwner;
+  | AddOwner
+  | GetTokens
+  | GetTrans
+  | GetOwners;
 function reducer(state: State = INITIAL_STATE, action: Action) {
   switch (action.type) {
     case SET: {
@@ -231,6 +272,30 @@ function reducer(state: State = INITIAL_STATE, action: Action) {
         transactions,
       };
     }
+
+    case GET_TOKENS: {
+      return {
+        ...state,
+        tokens: [...action.data.tokens],
+        detailTokens: [...action.data.detailTokens],
+      };
+    }
+
+    case GET_OWNERS: {
+      return {
+        ...state,
+        owners: [...action.data.owners],
+        requestOwners: [...action.data.requests],
+      };
+    }
+
+    case GET_TRANS: {
+      return {
+        ...state,
+        transactions: action.data.transactions,
+      };
+    }
+
     default:
       return state;
   }
@@ -244,6 +309,7 @@ interface SetInputs {
   transactionCount: number;
   transactions: Transaction[];
   detailTokens: Token[];
+  requestOwners: RequestOwner[];
 }
 
 interface UpdateBalanceInputs {
@@ -277,6 +343,20 @@ interface UpdateTokenDetailInputs {
   detailTokens: Token[];
 }
 
+interface OwnerResponseInputs {
+  owners: string[];
+  requests: RequestOwner[];
+}
+
+interface TokenResponseInputs {
+  tokens: string[];
+  detailTokens: Token[];
+}
+
+interface TransResponseInputs {
+  transactions: Transaction[];
+}
+
 const MultiSigWalletContext = createContext({
   state: INITIAL_STATE,
   set: (_data: SetInputs) => {},
@@ -285,6 +365,9 @@ const MultiSigWalletContext = createContext({
   addTx: (_data: AddTxInputs) => {},
   updateTx: (_data: UpdateTxInputs) => {},
   addOwner: (_data: AddOwnerInputs) => {},
+  getTokens: (_data: TokenResponseInputs) => {},
+  getOwners: (_data: OwnerResponseInputs) => {},
+  getTransactions: (_data: TransResponseInputs) => {},
   updateTokenDetailList: (_data: UpdateTokenDetailInputs) => {},
 });
 
@@ -345,6 +428,27 @@ export const Provider: React.FC<ProviderProps> = ({ children }) => {
     });
   }
 
+  function getTokens(data: TokenResponseInputs) {
+    dispatch({
+      type: GET_TOKENS,
+      data,
+    });
+  }
+
+  function getTransactions(data: TransResponseInputs) {
+    dispatch({
+      type: GET_TRANS,
+      data,
+    });
+  }
+
+  function getOwners(data: OwnerResponseInputs) {
+    dispatch({
+      type: GET_OWNERS,
+      data,
+    });
+  }
+
   return (
     <MultiSigWalletContext.Provider
       value={useMemo(
@@ -355,6 +459,9 @@ export const Provider: React.FC<ProviderProps> = ({ children }) => {
           addTx,
           updateTx,
           addOwner,
+          getOwners,
+          getTransactions,
+          getTokens,
           addTokenCoin,
           updateTokenDetailList,
         }),

@@ -40,7 +40,6 @@ export async function getTokenInfo(
 ): Promise<TokenInformation> {
   Token.setProvider(web3.currentProvider);
   const token = await Token.at(token_address);
-
   const name = await token.name();
   const symbol = await token.symbol();
   const decimals = await token.decimals();
@@ -64,11 +63,12 @@ export async function getTokenListInfo(
 ) {
   const { wallet, tokens } = params;
   const tokenList: TokenInformation[] = [];
-
+  console.log(tokens);
   for (let i = 0; i < tokens.length; i++) {
     const t = await getTokenInfo(web3, tokens[i], wallet);
     tokenList.push(t);
   }
+  console.log(tokenList);
   return tokenList;
 }
 
