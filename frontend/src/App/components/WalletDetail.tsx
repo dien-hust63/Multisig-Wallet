@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Menu, Segment, Message, Button, Icon } from "semantic-ui-react";
+import {
+  Menu,
+  Segment,
+  Message,
+  Button,
+  Icon,
+  Tab,
+  Card,
+} from "semantic-ui-react";
 import { useMultiSigWalletContext } from "../../contexts/MultiSigWallet";
 import { useWeb3Context } from "../../contexts/Web3";
 import BN from "bn.js";
@@ -405,7 +413,7 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
       <div className="wallet-detail-header">
         <h1>
           Name: {state.name}
-          <br />
+          <Tab />
           Balance: {state.balance} ETH
         </h1>
         <div className="address"> Address Wallet: {state.address}</div>
@@ -414,12 +422,18 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
         <div className="wallet-detail-region">
           <div className="wallet-detail-section">
             <div className="section-left">
-              <h4 className="title">Owners</h4>
+              <Icon name="users" circular />
+              <b>Owners</b>
             </div>
             <div className="section-right">
-              <Button inverted color="blue" onClick={() => setUserOpen(true)}>
-                Add
-              </Button>
+              <Button
+                color="blue"
+                content="Owner"
+                icon="add"
+                labelPosition="left"
+                inverted
+                onClick={() => setUserOpen(true)}
+              />
               <Button
                 inverted
                 color="blue"
@@ -528,16 +542,18 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
         <div className="wallet-detail-region">
           <div className="wallet-detail-section">
             <div className="section-left">
-              <h4 className="title">Tokens</h4>
+              <Icon name="money bill alternate" circular />
+              Tokens
             </div>
             <div className="section-right">
               <Button
-                inverted
                 color="blue"
+                content="Token"
+                icon="add"
+                labelPosition="left"
+                inverted
                 onClick={() => setCreateTokenForm(true)}
-              >
-                Add
-              </Button>
+              />
               <Button
                 inverted
                 color="blue"
@@ -625,12 +641,17 @@ const WalletDetail: React.FC<Props> = ({ wallet }) => {
         <div className="wallet-detail-region">
           <div className="wallet-detail-section">
             <div className="section-left">
-              <h4 className="title">Multisig transactions</h4>
+              <Icon name="dollar sign" circular />
+              Transactions
             </div>
             <div className="section-right">
-              <Button inverted color="blue">
-                Add
-              </Button>
+              <Button
+                color="blue"
+                content="Trans"
+                icon="add"
+                labelPosition="left"
+                inverted
+              />
               <Button
                 inverted
                 color="blue"
