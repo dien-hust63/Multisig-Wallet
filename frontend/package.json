@@ -17,6 +17,7 @@
     "react-scripts": "3.4.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
+    "sweetalert2": "^11.4.33",
     "typescript": "^3.9.2",
     "web3": "^1.2.7"
   },
